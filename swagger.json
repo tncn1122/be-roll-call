@@ -67,7 +67,6 @@
         "description": "This can only be done by the logged in user.",
         "operationId": "createUser",
         "produces": [
-          "application/xml",
           "application/json"
         ],
         "parameters": [
@@ -97,12 +96,11 @@
         "description": "",
         "operationId": "loginUser",
         "produces": [
-          "application/xml",
           "application/json"
         ],
         "parameters": [
           {
-            "name": "username",
+            "name": "id",
             "in": "query",
             "description": "The user name for login",
             "required": true,
