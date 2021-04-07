@@ -101,14 +101,14 @@
         "parameters": [
           {
             "name": "id",
-            "in": "body",
+            "in": "formData",
             "description": "The user name for login",
             "required": true,
             "type": "string"
           },
           {
             "name": "password",
-            "in": "body",
+            "in": "formData",
             "description": "The password for login in clear text",
             "required": true,
             "type": "string"
