@@ -4,13 +4,27 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// Routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
+
+
+
+// config env
+require('dotenv').config()
+
+// database
+require('./db/db')
+
+
+
 var app = express();
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
