@@ -1,5 +1,38 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  #preloader
+    .jumper
+      div
+      div
+      div
+  // ***** Preloader End *****
+  // ***** Welcome Area Start *****
+  #welcome.welcome-area
+    // ***** Header Text Start *****
+    .header-text
+      .container
+        .row
+          .left-text.col-lg-6.col-md-12.col-sm-12.col-xs-12(data-scroll-reveal='enter left move 30px over 0.6s after 0.4s')
+            h1
+              | Hệ Thống Điểm Danh Sinh Viên 
+              em PTIT Roll-Call
+            p
+              a(href='#') PTIT Roll-Call 
+              | là hệ thống hỗ trợ quản lý lớp học, đem đến giải pháp tiện lợi giúp điểm danh sinh viên nhanh chóng thông qua thẻ sinh viên hoặc mã QR.
+            a.main-button-slider(href='/api-docs') Tài Liệu API
+    // ***** Header Text End *****
+    // ***** Welcome Area End *****
+    // jQuery
+    script(src='assets/js/jquery-2.1.0.min.js')
+    // Bootstrap
+    script(src='assets/js/popper.js')
+    script(src='assets/js/bootstrap.min.js')
+    // Plugins
+    script(src='assets/js/owl-carousel.js')
+    script(src='assets/js/scrollreveal.min.js')
+    script(src='assets/js/waypoints.min.js')
+    script(src='assets/js/jquery.counterup.min.js')
+    script(src='assets/js/imgfix.min.js')
+    // Global Init
+    script(src='assets/js/custom.js')
