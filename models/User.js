@@ -38,9 +38,18 @@ const userSchema = mongoose.Schema({
         required: true,
         minLength: 5
     },
+    role:{
+        type: Number,
+        require: true
+    },
+    classes: [{
+        class:{
+            type: String,
+            require: true
+        }
+    }],
     token: {
         type: String,
-        
     }
 })
 
@@ -77,6 +86,12 @@ userSchema.statics.findByCredentials = async (id, password) => {
     }
     
     return user
+}
+
+userSchema.methods.isUnique = async (id, email) =>{
+    var errors = {error};
+    const userId = await User.findOne({id: id})
+    
 }
 //===
 const User = mongoose.model('User', userSchema)
