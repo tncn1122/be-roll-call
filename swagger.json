@@ -43,6 +43,7 @@
             "content": {}
           }
         },
+        "x-codegen-request-body-name": "body",
         "security": [
           {
             "BearerAuth": []
