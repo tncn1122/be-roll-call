@@ -128,8 +128,10 @@
             "type": "string"
           },
           "password": {
-            "type": "string",
-            "description": "User Info"
+            "type": "string"
+          },
+          "role":{
+            "type": "integer"
           }
         },
         "xml": {
