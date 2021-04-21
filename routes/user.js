@@ -32,4 +32,16 @@ router.post('/login', async(req, res) => {
     }
 })
 
+router.post('/logout', auth, async(req, res) => {
+    //Login a registered user
+    try {
+        req.user.token = "";
+        await req.user.save()
+        res.send()
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error)
+    }
+})
+
 module.exports = router;

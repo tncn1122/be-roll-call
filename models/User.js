@@ -39,7 +39,8 @@ const userSchema = mongoose.Schema({
         minLength: 5
     },
     role:{
-        type: Number,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Role",
         require: true
     },
     classes: [{
