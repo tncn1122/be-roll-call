@@ -2,12 +2,14 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+//require('./value/string')
 
 /*
 id
 name
 email
 pass
+role
 token
 */
 const userSchema = mongoose.Schema({
@@ -29,7 +31,7 @@ const userSchema = mongoose.Schema({
         lowercase: true,
         validate: value => {
             if (!validator.isEmail(value)) {
-                throw new Error({error: 'Invalid Email address'})
+                throw new Error({error: "stringError.invalid_email"})
             }
         }
     },
@@ -39,8 +41,7 @@ const userSchema = mongoose.Schema({
         minLength: 5
     },
     role:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Role",
+        type: String,
         require: true
     },
     classes: [{
@@ -90,9 +91,12 @@ userSchema.statics.findByCredentials = async (id, password) => {
 }
 
 userSchema.methods.isUnique = async (id, email) =>{
-    var errors = {error};
     const userId = await User.findOne({id: id})
-    
+    if (userId){
+        return false;
+    }
+    return true;
+
 }
 //===
 const User = mongoose.model('User', userSchema)
