@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
-//require('./value/string')
+const stringError = require('../value/string')
 
 const auth = async(req, res, next) => {    
     try {
@@ -8,14 +8,14 @@ const auth = async(req, res, next) => {
         const data = jwt.verify(token, process.env.JWT_KEY)
         const user = await User.findOne({ _id: data._id, token: token })
         if (!user) {
-            throw new Error({error: "stringError.notAuth"})
+            throw new Error({message: stringError.not_auth})
         }
         req.user = user
         req.token = token
         next()
     } catch (error) {
-        //console.log(error);
-        res.status(401).send({ error: "stringError.notAuth" })
+        console.log(stringError.not_auth);
+        res.status(401).send({message: stringError.not_auth})
     }
 
 }

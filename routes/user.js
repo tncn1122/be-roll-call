@@ -1,7 +1,7 @@
 var express = require('express');
 const User = require('../models/User')
 const auth = require('../middleware/auth')
-//require('./value/string')
+const stringError = require('../value/string')
 
 const router = express.Router()
 
@@ -9,11 +9,12 @@ router.post('/register', auth, async (req, res) => {
     // Create a new user
     try {
         const user = new User(req.body)
-        await user.save()
         await user.generateAuthToken()
+        await user.save()
         res.status(201).send({user})
     } catch (error) {
-        res.status(400).send(error)
+        console.log(error);
+        res.status(400).send({message: error.message})
     }
 })
 
@@ -23,13 +24,14 @@ router.post('/login', async(req, res) => {
         const { id, password } = req.body
         const user = await User.findByCredentials(id, password)
         if (!user) {
-            return res.status(401).send({error: "stringError.invalid_credentials"})
+            return res.status(401).send({message: stringError.invalid_credentials})
         }
         await user.generateAuthToken()
         //user.token = token;
         res.send({ user })
     } catch (error) {
-        res.status(400).send(error)
+        //TODO
+        res.status(400).send({message: error})
     }
 })
 
@@ -41,7 +43,8 @@ router.post('/logout', auth, async(req, res) => {
         res.send()
     } catch (error) {
         console.log(error);
-        res.status(500).send(error)
+        //TODO
+        res.status(500).send({message: error})
     }
 })
 

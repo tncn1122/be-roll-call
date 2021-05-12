@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-//require('./value/string')
+const stringError = require('../value/string')
 
 /*
 id
@@ -31,7 +31,7 @@ const userSchema = mongoose.Schema({
         lowercase: true,
         validate: value => {
             if (!validator.isEmail(value)) {
-                throw new Error({error: "stringError.invalid_email"})
+                throw new Error(stringError.invalid_email)
             }
         }
     },
