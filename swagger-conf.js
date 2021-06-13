@@ -4,7 +4,7 @@ let options = {
             title: 'Roll-call API',
             version: '1.0.0',
         },
-        host: 'localhost:3000',
+        host: process.env.HOST,
         basePath: '/api',
         produces: [
             "application/json",
