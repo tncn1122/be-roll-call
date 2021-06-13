@@ -50,6 +50,9 @@ const userSchema = mongoose.Schema({
             require: true
         }
     }],
+    qrUrl: {
+        type: String,
+    },
     token: {
         type: String,
     }
@@ -63,6 +66,7 @@ userSchema.pre('save', async function (next) {
     }
     next()
 })
+
 
 userSchema.methods.generateAuthToken = async function() {
     // Generate an auth token for the user
@@ -78,13 +82,11 @@ userSchema.statics.findByCredentials = async (id, password) => {
     // Search for a user by id and password.
     const user = await User.findOne({id: id} )
     if (!user) {
-        //throw new Error({ error: 'Invalid login credentials' })
-        return null
+        return null;
     }
     const isPasswordMatch = await bcrypt.compare(password, user.password)
     if (!isPasswordMatch) {
-        //throw new Error('Invalid login credentials')
-        return null
+        return null;
     }
     
     return user
