@@ -9,7 +9,7 @@ let options = {
         produces: [
             "application/json",
         ],
-        schemes: ['http', 'https'],
+        schemes: ['https', 'http'],
         securityDefinitions: {
             Bearer: {
                 description: 'Copy token của tài khoản bỏ vào ô value.',
