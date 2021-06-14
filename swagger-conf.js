@@ -11,16 +11,16 @@ let options = {
         ],
         schemes: ['http', 'https'],
         securityDefinitions: {
-            JWT: {
+            Bearer: {
+                description: 'Copy token của tài khoản bỏ vào ô value.',
                 type: 'apiKey',
-                in: 'header',
                 name: 'Authorization',
-                description: "",
+                in: 'header'
             }
         }
     },
     basedir: __dirname, //app absolute path
-    files: ['./routes/*.js'] //Path to the API handle folder
+    files: ['./routes/*.js', './models/*.js'] //Path to the API handle folder
 };
 
 module.exports = options;

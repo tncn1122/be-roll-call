@@ -14,7 +14,7 @@ const isUser = async(req, res, next) => {
         req.token = token
         next()
     } catch (error) {
-        console.log(stringError.not_auth);
+        //console.log(stringError.not_auth);
         res.status(401).send({message: stringError.not_auth})
     }
 
@@ -22,6 +22,7 @@ const isUser = async(req, res, next) => {
 
 const isAdmin = async(req, res, next) => {    
     try {
+        //console.log(req);
         const token = req.header('Authorization').replace('Bearer ', '')
         const data = jwt.verify(token, process.env.JWT_KEY)
         const user = await User.findOne({ _id: data._id, token: token })
@@ -32,7 +33,7 @@ const isAdmin = async(req, res, next) => {
         req.token = token
         next()
     } catch (error) {
-        console.log(stringError.not_auth);
+        //console.log(error);
         res.status(401).send({message: stringError.not_auth})
     }
 
@@ -50,7 +51,7 @@ const isTeacher = async(req, res, next) => {
         req.token = token
         next()
     } catch (error) {
-        console.log(stringError.not_auth);
+        //console.log(stringError.not_auth);
         res.status(401).send({message: stringError.not_auth})
     }
 
@@ -68,7 +69,7 @@ const isStudent = async(req, res, next) => {
         req.token = token
         next()
     } catch (error) {
-        console.log(stringError.not_auth);
+        //console.log(stringError.not_auth);
         res.status(401).send({message: stringError.not_auth})
     }
 

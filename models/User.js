@@ -4,14 +4,25 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const stringError = require('../value/string')
 
-/*
-id
-name
-email
-pass
-role
-token
-*/
+/**
+ * @typedef User
+ * @property {string} id.required
+ * @property {string} name.required
+ * @property {string} email.required
+ * @property {string} password.required
+ * @property {enum} role.required  - Một trong các role sau đây: - eg: student, teacher, admin
+ * @property {string} qrUrl
+ * @property {string[]} class
+ * @property {string} token
+ */
+
+/**
+ * @typedef UserInfo
+ * @property {string} name
+ * @property {string} email
+ * @property {string} qrUrl
+ */
+
 const userSchema = mongoose.Schema({
     id: {
         type: String,
