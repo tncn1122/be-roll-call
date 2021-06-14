@@ -14,7 +14,7 @@ const router = express.Router()
 
 /**
  * @typedef ListUsers
- * @property {int} count.required - số lượng phần tử
+ * @property {Integer} count.required - số lượng phần tử
  * @property {Array.<User>} data.required - các phần tử
  */
 
