@@ -62,6 +62,6 @@ const classInfoSchema = mongoose.Schema({
 })
 
 //
-const ClassInfo = mongoose.model('ClassInfo', userSchema)
+const ClassInfo = mongoose.model('ClassInfo', classInfoSchema)
 
 module.exports = ClassInfo

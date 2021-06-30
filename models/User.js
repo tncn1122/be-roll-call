@@ -27,17 +27,17 @@ const userSchema = mongoose.Schema({
     id: {
         type: String,
         unique: true,
-        require: true,
+        require: [true, stringError.id_required],
         trim: true
     },
     name: {
         type: String,
-        required: true,
+        required: [true, stringError.name_required],
         trim: true
     },
     email: {
         type: String,
-        required: true,
+        required: [true, stringError.email_required],
         unique: true,
         lowercase: true,
         validate: value => {
@@ -48,12 +48,17 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: [true, stringError.password_required],
         minLength: 5
     },
     role:{
         type: String,
-        require: true
+        enum: {
+            values: ['admin', 'student', 'teacher'],
+            message: "Quyền không đúng!"
+        },
+        default: 'student',
+        require: [true, stringError.role_wrong]
     },
     classes: [{
         class:{
