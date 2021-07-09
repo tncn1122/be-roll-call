@@ -10,6 +10,8 @@ var app = express();
 // Routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
+var studentsRouter = require('./routes/student');
+var teachersRouter = require('./routes/teacher');
 
 
 // Config Swagger
@@ -45,7 +47,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/students', studentsRouter);
+app.use('/api/teachers', teachersRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
