@@ -2,9 +2,10 @@ const auth  = require('../middleware/auth');
 const ErrorUtil = require('../util/ErrorUtil');
 const ResponseUtil = require('../util/Response');
 var express = require('express');
+const bcrypt = require('bcryptjs')
 const User = require('../models/User');
 const stringError = require('../value/string');
-
+const QR = require('../util/QR')
 const router = express.Router()
 
 /**
@@ -35,6 +36,7 @@ router.get('/', auth.isAdmin, async(req, res) => {
             res.status(500).send(ResponseUtil.makeMessageResponse(err))
         }
         else{
+            console.log((users));
             res.status(200).send(ResponseUtil.makeResponse(users))
         }
     });
@@ -55,6 +57,7 @@ router.post('/', auth.isAdmin, async (req, res) => {
     // Create a new user
     try {
         const user = new User(req.body);
+        user.qrUrl = QR.createQR(user.id)
         await user.generateAuthToken();
         await user.save();
         res.status(201).send(ResponseUtil.makeResponse(user));
@@ -91,6 +94,7 @@ router.put('/', auth.isUser, async (req, res) => {
         delete userUpdate['__v'];
         await User.findByIdAndUpdate(user._id, userUpdate, function(err, raw){
             if(!err){
+                raw.save();
                 res.status(201).send(ResponseUtil.makeResponse(raw));
             }
             else{
@@ -107,6 +111,40 @@ router.put('/', auth.isUser, async (req, res) => {
         else{
             res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
         }
+        
+    }
+})
+
+
+/**
+ * Chỉnh sửa thông tin tài khoản. Chỉ những tài khoản đã đăng nhập mới thực hiện được. Một tài khoản chỉ có thể thay đổi thông tin của chính tài khoản đó.
+ * @route PUT /users/
+ * @group User
+ * @param {UserInfo.model} user.body.require - User với quyền thông thường chỉ có thể sửa các thông tin như ở Body mẫu. Body put lên có thể không chứa đủ các trường như dưới mẫu, nhưng chỉ có những trường đó có thể thay đổi (những trường khác VD: id, password,..) có thể gửi lên nhưng sẽ không bị thay đổi.
+ * @returns {ListUsers.model} 200 - Thông tin tài khoản đã chỉnh sửa và token ứng với tài khoản đó.
+ * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
+ * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
+ * @security Bearer
+ */
+router.put('/password', auth.isUser, async (req, res) => {
+    // seft update user info
+    try {
+        let userUpdate = req.body;
+        let user = req.user;
+        user.password = await bcrypt.hash(userUpdate.password, 8)
+        await User.findByIdAndUpdate(user._id, user, function(err, raw){
+            if(!err){
+                res.status(201).send(ResponseUtil.makeResponse(raw));
+            }
+            else{
+                res.status(400).send(ResponseUtil.makeMessageResponse(err));
+            }
+        });
+        
+        
+    } catch (error) {
+        //console.log(error);
+        res.status(400).send(ResponseUtil.makeMessageResponse(error))
         
     }
 })

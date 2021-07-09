@@ -3,6 +3,7 @@ function makeResponse(data = []){
     let count = 0
     if(Array.isArray(data)){
         count = data.length
+        arrayData = data
     }
     else{
         arrayData.push(data)
