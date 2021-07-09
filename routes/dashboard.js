@@ -32,22 +32,12 @@ const router = express.Router()
  * @security Bearer
  */
  router.get('/', auth.isAdmin, async(req, res) => {
-    var student_count = 0;
-    var teacher_count = 0;
-    var class_count = 0;
 
-    await User.find({role:"student"}, function(err, users){
-        //console.log(users);
-        if(!err){
-            student_count = users.length;
-        }
-    });
+    const studentList = await User.find({role:"student"})
+    const teacherList = await User.find({role:"teacher"})
+    const classList = await User.find({})
 
-    await User.find({role:"teacher"}, function(err, users){
-        if(!err){
-            teacher_count = users.length;
-        }
-    });
+
 
     // Class.find({role:"student"}, function(err, users){
     //     //console.log(users);
@@ -55,10 +45,11 @@ const router = express.Router()
     //         student_count = users.length();
     //     }
     // });
+   
     res.status(200).send(ResponseUtil.makeResponse({
-        student_count: student_count + " học sinh", 
-        teacher_count: teacher_count + " giảng viên", 
-        class_count: class_count + " lớp học"
+        student_count: studentList.length + " học sinh", 
+        teacher_count: teacherList.length + " giảng viên", 
+        class_count: classList.length + " lớp học"
     }));
 })
 
