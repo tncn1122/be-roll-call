@@ -56,9 +56,9 @@ const router = express.Router()
     //     }
     // });
     res.status(200).send(ResponseUtil.makeResponse({
-        student_count: student_count, 
-        teacher_count: teacher_count, 
-        class_count: class_count
+        student_count: student_count + " học sinh", 
+        teacher_count: teacher_count + " giảng viên", 
+        class_count: class_count + " lớp học"
     }));
 })
 
