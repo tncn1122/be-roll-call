@@ -7,6 +7,9 @@ var cors = require('cors');
 
 var app = express();
 
+// config env
+require('dotenv').config()
+
 // Routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
@@ -25,8 +28,6 @@ expressSwagger(swaggerConf);
 
 
 
-// config env
-require('dotenv').config()
 
 // database
 require('./db/db')
@@ -73,3 +74,6 @@ app.use(function(err, req, res, next) {
 
 
 module.exports = app;
+
+var port = process.env.DEPLOY_PORT;
+app.listen(port);

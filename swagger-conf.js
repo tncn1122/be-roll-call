@@ -1,18 +1,19 @@
+const protocol = process.env.PROTOCOL
 let options = {
     swaggerDefinition: {
         info: {
             title: 'Roll-call API',
-            version: '1.0.0',
+            version: "1.0.0",
         },
         host: process.env.HOST,
         basePath: '/api',
         produces: [
             "application/json",
         ],
-        schemes: ['https', 'http'],
+        schemes: [protocol],
         securityDefinitions: {
             Bearer: {
-                description: 'Copy token của tài khoản bỏ vào ô value.',
+                description: 'Copy token của tài khoản đưa vào ô value.',
                 type: 'apiKey',
                 name: 'Authorization',
                 in: 'header'

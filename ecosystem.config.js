@@ -4,16 +4,16 @@ module.exports = {
     watch: '.'
   },],
 
-  deploy : {
-    production : {
-      user : 'SSH_USERNAME',
-      host : 'SSH_HOSTMACHINE',
-      ref  : 'origin/master',
-      repo : 'GIT_REPOSITORY',
-      path : 'DESTINATION_PATH',
-      'pre-deploy-local': '',
-      'post-deploy' : 'npm install && pm2 reload ecosystem.config.js --env production',
-      'pre-setup': ''
-    }
-  }
+  deploy: {
+    production: {
+      user: 'tncn1122',
+      host: '13.250.121.254',
+      key: 'deploy.key',
+      ref: 'origin/master',
+      repo: 'https://github.com/tncn1122/be-roll-call',
+      path: 'https://github.com/tncn1122/be-roll-call',
+      'post-deploy':
+        'yarn install && yarn build && pm2 reload ecosystem.config.js --env production && pm2 save && git checkout yarn.lock',
+    },
+  },
 };
