@@ -7,6 +7,7 @@ const User = require('../models/User');
 const stringError = require('../value/string');
 const QR = require('../util/QR')
 const router = express.Router()
+const userUtil = require('../util/UserUtils')
 
 /**
  * @typedef Login
@@ -33,7 +34,7 @@ router.get('/', auth.isAdmin, async(req, res) => {
     User.find({}, function(err, users){
         //console.log(users);
         if(err){
-            res.status(500).send(ResponseUtil.makeMessageResponse(err))
+            res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
         }
         else{
             console.log((users));
@@ -47,7 +48,7 @@ router.get('/', auth.isAdmin, async(req, res) => {
  * Tạo tài khoản. Chỉ có tài khoản có quyền Admin mới thực hiện được chức năng này.
  * @route POST /users/
  * @group User
- * @param {User.model} user.body.require - Body là file json chứa thông tin user, những mục không bắt buộc (class, qrUrl, token) có thể không cần gửi trong json. Role thuộc một trong các từ ["admin", "teacher", "student"].
+ * @param {User.model} user.body.required - Body là file json chứa thông tin user, những mục không bắt buộc (class, qrUrl, token) có thể không cần gửi trong json. Role thuộc một trong các từ ["admin", "teacher", "student"].
  * @returns {ListUsers.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
@@ -70,11 +71,39 @@ router.post('/', auth.isAdmin, async (req, res) => {
     }
 })
 
+
+/**
+ * Xem thông tin tài khoản. Chỉ những tài khoản đã đăng nhập mới thực hiện được chức năng này. Riêng tài khoản quyền admin hoặc tài khoản tự xem của bản thân sẽ xem được toàn bộ thông tin tài khoản.
+ * @route GET /users/{id}
+ * @group User
+ * @param {string} id.path.required ID của tài khoản người dùng.
+ * @returns {ListUsers.model} 200 - Thông tin tài khoản ứng với tài khoản đó.
+ * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
+ * @security Bearer
+ */
+ router.get('/:id', auth.isUser, async (req, res) => {
+    try {
+        let userResponse = await User.findOne({id: req.params.id})
+        if(!userResponse){
+            res.status(400).send(ResponseUtil.makeMessageResponse(stringError.user_not_found))
+        }
+        else{
+            if((req.user.role !== "admin") && req.user.id !== req.params.id){
+                userResponse = userUtil.hideUserInfo(userResponse);
+            }
+            res.status(200).send(ResponseUtil.makeResponse(userResponse));
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
+    }
+})
+
 /**
  * Chỉnh sửa thông tin tài khoản. Chỉ những tài khoản đã đăng nhập mới thực hiện được. Một tài khoản chỉ có thể thay đổi thông tin của chính tài khoản đó.
  * @route PUT /users/
  * @group User
- * @param {UserInfo.model} user.body.require - User với quyền thông thường chỉ có thể sửa các thông tin như ở Body mẫu. Body put lên có thể không chứa đủ các trường như dưới mẫu, nhưng chỉ có những trường đó có thể thay đổi (những trường khác VD: id, password,..) có thể gửi lên nhưng sẽ không bị thay đổi.
+ * @param {UserInfo.model} user.body.required - User với quyền thông thường chỉ có thể sửa các thông tin như ở Body mẫu. Body put lên có thể không chứa đủ các trường như dưới mẫu, nhưng chỉ có những trường đó có thể thay đổi (những trường khác VD: id, password,..) có thể gửi lên nhưng sẽ không bị thay đổi.
  * @returns {ListUsers.model} 200 - Thông tin tài khoản đã chỉnh sửa và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
@@ -98,7 +127,7 @@ router.put('/', auth.isUser, async (req, res) => {
                 res.status(201).send(ResponseUtil.makeResponse(raw));
             }
             else{
-                res.status(400).send(ResponseUtil.makeMessageResponse(err));
+                res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
             }
         });
         
@@ -117,10 +146,10 @@ router.put('/', auth.isUser, async (req, res) => {
 
 
 /**
- * Chỉnh sửa thông tin tài khoản. Chỉ những tài khoản đã đăng nhập mới thực hiện được. Một tài khoản chỉ có thể thay đổi thông tin của chính tài khoản đó.
- * @route PUT /users/
+ * Chỉnh sửa mật khẩu tài khoản. Chỉ những tài khoản đã đăng nhập mới thực hiện được. Một tài khoản chỉ có thể thay đổi thông tin của chính tài khoản đó. Admin có thể sửa mật khẩu của người khác.
+ * @route PUT /users/password
  * @group User
- * @param {UserInfo.model} user.body.require - User với quyền thông thường chỉ có thể sửa các thông tin như ở Body mẫu. Body put lên có thể không chứa đủ các trường như dưới mẫu, nhưng chỉ có những trường đó có thể thay đổi (những trường khác VD: id, password,..) có thể gửi lên nhưng sẽ không bị thay đổi.
+ * @param {string} password.query.required - Mật khẩu mới của tài khoản.
  * @returns {ListUsers.model} 200 - Thông tin tài khoản đã chỉnh sửa và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
@@ -129,22 +158,23 @@ router.put('/', auth.isUser, async (req, res) => {
 router.put('/password', auth.isUser, async (req, res) => {
     // seft update user info
     try {
-        let userUpdate = req.body;
+        let userUpdate = req.query;
         let user = req.user;
-        user.password = await bcrypt.hash(userUpdate.password, 8)
+        userUtil.passwordValidate(userUpdate.password);
+        user.password = await bcrypt.hash(userUpdate.password, 8);
         await User.findByIdAndUpdate(user._id, user, function(err, raw){
             if(!err){
                 res.status(201).send(ResponseUtil.makeResponse(raw));
             }
             else{
-                res.status(400).send(ResponseUtil.makeMessageResponse(err));
+                res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
             }
         });
         
         
     } catch (error) {
-        //console.log(error);
-        res.status(400).send(ResponseUtil.makeMessageResponse(error))
+        console.log(error);
+        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
         
     }
 })
@@ -153,7 +183,7 @@ router.put('/password', auth.isUser, async (req, res) => {
  * Post thông tin để đăng nhập vào hệ thống. Không yêu cầu quyền khi đăng nhập.
  * @route POST /users/login
  * @group User
- * @param {Login.model} login.body.require - Thông tin đăng nhập.
+ * @param {Login.model} login.body.required - Thông tin đăng nhập.
  * @returns {ListUsers.model} 200 - Thông tin tài khoản kèm token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin tài khoản gửi lên sai.
  */
@@ -175,7 +205,7 @@ router.post('/login', async(req, res) => {
     } catch (error) {
         //TODO
         //console.log(error);
-        res.status(400).send(ResponseUtil.makeMessageResponse(error))
+        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })
 
@@ -196,7 +226,7 @@ router.post('/logout', auth.isUser, async(req, res) => {
     } catch (error) {
         //console.log(error);
         //TODO
-        res.status(500).send(ResponseUtil.makeMessageResponse(error))
+        res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })
 
@@ -209,7 +239,7 @@ router.get('/resetpass', async(req, res) => {
         res.status(200).send(ResponseUtil.makeMessageResponse())
     }
     catch(err){
-        res.status(500).send(ResponseUtil.makeMessageResponse(err))
+        res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })
 

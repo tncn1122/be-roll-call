@@ -75,5 +75,8 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-var port = process.env.DEPLOY_PORT;
-app.listen(port);
+var MODE = process.env.MODE || 'Dev';
+if(MODE === 'Prod'){
+  app.listen(process.env.DEPLOY_PORT);
+}
+  

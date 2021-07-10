@@ -10,14 +10,14 @@ const router = express.Router()
 
 /**
  * @typedef DashboardInfo
- * @property {integer} student_count.required - số lượng sinh viên
- * @property {integer} teacher_count.required - số lượng sinh viên
- * @property {integer} class_count.required - số lượng sinh viên
+ * @property {string} student_count.required - số lượng sinh viên
+ * @property {string} teacher_count.required - số lượng sinh viên
+ * @property {string} class_count.required - số lượng sinh viên
  */
 
 
 /**
- * @typedef ListUsers
+ * @typedef Dashboard
  * @property {integer} count.required - số lượng phần tử
  * @property {Array.<DashboardInfo>} data.required - các phần tử
  */
@@ -27,7 +27,7 @@ const router = express.Router()
  * Get thông tin số lượng tài khoản hiện có. Chỉ có tài khoản quyền Admin mới thực hiện được chức năng này.
  * @route GET /dashboard/
  * @group Dashboard
- * @returns {ListUsers.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
+ * @returns {Dashboard.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
  * @returns {Error.model} 500 - Lỗi.
  * @security Bearer
  */
