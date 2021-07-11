@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const stringError = require('../value/string')
+const stringMessage = require('../value/string')
+const userUtil = require('../util/UserUtils')
 
 /**
  * @typedef User
@@ -12,6 +13,7 @@ const stringError = require('../value/string')
  * @property {string} password.required
  * @property {enum} role.required  - Một trong các role sau đây: - eg: student, teacher, admin
  * @property {string} qrUrl
+ * @property {string} avtUrl
  * @property {string[]} class
  * @property {string} token
  */
@@ -21,34 +23,41 @@ const stringError = require('../value/string')
  * @property {string} name
  * @property {string} email
  * @property {string} qrUrl
+ * @property {string} avtUrl
+ */
+
+/**
+ * @typedef PasswordChange
+ * @property {string} old_password
+ * @property {string} new_password
  */
 
 const userSchema = mongoose.Schema({
     id: {
         type: String,
         unique: true,
-        require: [true, stringError.id_required],
+        require: [true, stringMessage.id_required],
         trim: true
     },
     name: {
         type: String,
-        required: [true, stringError.name_required],
+        required: [true, stringMessage.name_required],
         trim: true
     },
     email: {
         type: String,
-        required: [true, stringError.email_required],
+        required: [true, stringMessage.email_required],
         unique: true,
         lowercase: true,
         validate: value => {
             if (!validator.isEmail(value)) {
-                throw new Error(stringError.invalid_email)
+                throw new Error(stringMessage.invalid_email)
             }
         }
     },
     password: {
         type: String,
-        required: [true, stringError.password_required],
+        required: [true, stringMessage.password_required],
         minLength: 5
     },
     role:{
@@ -58,7 +67,7 @@ const userSchema = mongoose.Schema({
             message: "Quyền không đúng!"
         },
         default: 'student',
-        require: [true, stringError.role_wrong]
+        require: [true, stringMessage.role_wrong]
     },
     classes: [{
         class:{
@@ -67,6 +76,9 @@ const userSchema = mongoose.Schema({
         }
     }],
     qrUrl: {
+        type: String,
+    },
+    avtUrl: {
         type: String,
     },
     token: {
@@ -79,6 +91,9 @@ userSchema.pre('save', async function (next) {
     const user = this
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8)
+    }
+    if (user.isModified('avtUrl')){
+        user.avtUrl = userUtil.generateAvatar(user.name)
     }
     next()
 })

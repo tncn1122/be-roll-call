@@ -1,8 +1,8 @@
-const stringError = require('../value/string')
+const stringMessage = require('../value/string')
 
 function makeErrorValidateMessage(errorKey){
     errorKey = errorKey.replace(/\"|{|}/g, "");
-    return errorKey + " " + stringError.duplicate_credentials;
+    return errorKey + " " + stringMessage.duplicate_credentials;
 }
 
 module.exports = {

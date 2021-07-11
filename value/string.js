@@ -5,11 +5,15 @@ module.exports = {
     invalid_password_format: "Mật khẩu phải ít nhất 5 kí tự!",
     duplicate_credentials: "đã tồn tại!", 
     user_not_found: "Không tìm thấy người dùng!",
+    wrong_password: "Mật khẩu đã nhập không đúng!",
+    deleted_successfully: "Xóa thành công!",
 
+    //user validate
     id_required: "ID không được để trống!",
     name_required: "Tên không được để trống!",
     email_required: "Email không được để trống!",
     password_required: "Mật khẩu không được để trống!",
     role_required: "Quyền không được để trống!",
     role_wrong: "Quyền không đúng cú pháp!"
+    
 };

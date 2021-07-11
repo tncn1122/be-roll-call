@@ -4,7 +4,7 @@ const ResponseUtil = require('../util/Response');
 var express = require('express');
 const bcrypt = require('bcryptjs')
 const User = require('../models/User');
-const stringError = require('../value/string');
+const stringMessage = require('../value/string');
 const QR = require('../util/QR')
 const router = express.Router()
 
