@@ -4,7 +4,7 @@ const ResponseUtil = require('../util/Response');
 var express = require('express');
 const bcrypt = require('bcryptjs')
 const User = require('../models/User');
-const stringError = require('../value/string');
+const stringMessage = require('../value/string');
 const QR = require('../util/QR')
 const router = express.Router()
 const userUtil = require('../util/UserUtils')
@@ -85,7 +85,7 @@ router.post('/', auth.isAdmin, async (req, res) => {
     try {
         let userResponse = await User.findOne({id: req.params.id})
         if(!userResponse){
-            res.status(400).send(ResponseUtil.makeMessageResponse(stringError.user_not_found))
+            res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
         }
         else{
             if((req.user.role !== "admin") && req.user.id !== req.params.id){
@@ -101,19 +101,22 @@ router.post('/', auth.isAdmin, async (req, res) => {
 
 /**
  * Chỉnh sửa thông tin tài khoản. Chỉ những tài khoản đã đăng nhập mới thực hiện được. Một tài khoản chỉ có thể thay đổi thông tin của chính tài khoản đó.
- * @route PUT /users/
+ * @route PUT /users/{id}
  * @group User
+ * @param {string} id.path.required - ID của tài khoản.
  * @param {UserInfo.model} user.body.required - User với quyền thông thường chỉ có thể sửa các thông tin như ở Body mẫu. Body put lên có thể không chứa đủ các trường như dưới mẫu, nhưng chỉ có những trường đó có thể thay đổi (những trường khác VD: id, password,..) có thể gửi lên nhưng sẽ không bị thay đổi.
- * @returns {ListUsers.model} 200 - Thông tin tài khoản đã chỉnh sửa và token ứng với tài khoản đó.
+ * @returns {ListUsers.model} 201 - Thông tin tài khoản đã chỉnh sửa và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer
  */
-router.put('/', auth.isUser, async (req, res) => {
+router.put('/:id', auth.isUser, async (req, res) => {
     // seft update user info
     try {
         let userUpdate = req.body;
         let user = req.user;
+        let user_id = req.params.id;
+        userUtil.onlyAdminAndOwner(user, user_id);
         delete userUpdate['id'];
         delete userUpdate['password'];
         delete userUpdate['role'];
@@ -147,22 +150,43 @@ router.put('/', auth.isUser, async (req, res) => {
 
 /**
  * Chỉnh sửa mật khẩu tài khoản. Chỉ những tài khoản đã đăng nhập mới thực hiện được. Một tài khoản chỉ có thể thay đổi thông tin của chính tài khoản đó. Admin có thể sửa mật khẩu của người khác.
- * @route PUT /users/password
+ * @route PUT /users/{id}/password
  * @group User
- * @param {string} password.query.required - Mật khẩu mới của tài khoản.
+ * @param {string} id.path.required - Id của tài khoản.
+ * @param {PasswordChange.model} password.body.required - Mật khẩu mới của tài khoản.
  * @returns {ListUsers.model} 200 - Thông tin tài khoản đã chỉnh sửa và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer
  */
-router.put('/password', auth.isUser, async (req, res) => {
+router.put('/:id/password', auth.isUser, async (req, res) => {
     // seft update user info
     try {
-        let userUpdate = req.query;
-        let user = req.user;
-        userUtil.passwordValidate(userUpdate.password);
-        user.password = await bcrypt.hash(userUpdate.password, 8);
-        await User.findByIdAndUpdate(user._id, user, function(err, raw){
+        let userUpdate = req.body;
+        let current_user = req.user;
+        let user_id = req.params.id;
+        userUtil.onlyAdminAndOwner(current_user, user_id)
+        
+        if (current_user.role !== 'admin'){
+            // check if old password is correct  
+            const user = await User.findByCredentials(current_user.id, userUpdate.old_password)
+            if (!user) {
+                return res.status(401).send(ResponseUtil.makeMessageResponse(stringMessage.wrong_password));
+            }
+        }
+        else{
+            current_user = await User.findOne({id: user_id})
+            if (!current_user) {
+                return res.status(401).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found));
+            }
+        }
+
+        // validate pass
+        userUtil.passwordValidate(userUpdate.new_password);
+
+        // update password
+        current_user.password = await bcrypt.hash(userUpdate.new_password, 8);
+        await User.findByIdAndUpdate(current_user._id, current_user, function(err, raw){
             if(!err){
                 res.status(201).send(ResponseUtil.makeResponse(raw));
             }
@@ -194,13 +218,13 @@ router.post('/login', async(req, res) => {
         if(id && password){
             const user = await User.findByCredentials(id, password)
             if (!user) {
-                return res.status(400).send(ResponseUtil.makeMessageResponse(stringError.invalid_credentials));
+                return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.invalid_credentials));
             }
             await user.generateAuthToken()
             res.send(ResponseUtil.makeResponse(user))
         }
         else{
-            res.status(400).send(ResponseUtil.makeMessageResponse(stringError.invalid_credentials));
+            res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.invalid_credentials));
         }
     } catch (error) {
         //TODO
@@ -231,14 +255,66 @@ router.post('/logout', auth.isUser, async(req, res) => {
 })
 
 
-router.get('/resetpass', async(req, res) => {
+router.get('/admin/reset', async(req, res) => {
+    console.log("resetpass");
     try{
         const user = await User.findOne({id: "admin" });
-        user.password = "admin";
-        user.save();
+        if (user){
+            user.password = "admin";
+            user.save();
+        }
+        else{
+            const newUser = new User({
+            "id": "admin",
+            "name": "admin",
+            "email": "admin@gmail.com",
+            "password": "admin",
+            "role": "admin",
+            })
+            newUser.save()
+        }
         res.status(200).send(ResponseUtil.makeMessageResponse())
     }
     catch(err){
+        res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
+    }
+})
+
+/**
+ * Xóa một user khỏi hệ thống dựa vào ID, chỉ có Admin mới thực hiện được chức năng này.
+ * @route DELETE /users/{id}
+ * @group User
+ * @param {string} id.path.required ID của tài khoản cần xóa.
+ * @returns {Error.model} 200 - "Xóa thành công!" nếu thao tác thành công.
+ * @returns {Error.model} 500 - Lỗi.
+ * @security Bearer
+ */
+router.delete('/:id', auth.isAdmin, async(req, res) => {
+    try{
+        let userId = req.params.id;
+        if (userUtil.findUser(userId)){
+            await User.deleteOne({id: userId})
+            res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage.deleted_successfully))
+        }
+        else{
+            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
+        }
+        
+    }
+    catch(err){
+        log(err)
+        res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
+    }
+})
+
+router.get('/database/delete/:role', async(req, res) => {
+    try{
+        let role = req.params.role;
+        await User.deleteMany({role: role})
+        res.status(200).send(ResponseUtil.makeMessageResponse("Delete " + role + " success"))
+    }
+    catch(err){
+        log(err)
         res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })
