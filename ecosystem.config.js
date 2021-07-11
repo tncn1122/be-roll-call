@@ -10,10 +10,10 @@ module.exports = {
       host: '13.250.121.254',
       key: 'deploy.key',
       ref: 'origin/master',
-      repo: 'https://github.com/tncn1122/be-roll-call',
-      path: 'https://github.com/tncn1122/be-roll-call',
+      repo: 'git@github.com:tncn1122/be-roll-call.git',
+      path: '/var/www/html/roll-call',
       'post-deploy':
-        'yarn install && yarn build && pm2 reload ecosystem.config.js --env production && pm2 save && git checkout yarn.lock',
+        'yarn install && pm2 reload ecosystem.config.js --env production && pm2 save && git checkout yarn.lock',
     },
   },
 };
