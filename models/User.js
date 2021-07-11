@@ -92,7 +92,7 @@ userSchema.pre('save', async function (next) {
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8)
     }
-    if (user.isModified('avtUrl')){
+    if(!user.avtUrl || (user.avtUrl && user.avtUrl.length == 0)){
         user.avtUrl = userUtil.generateAvatar(user.name)
     }
     next()
