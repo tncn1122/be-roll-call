@@ -65,7 +65,7 @@ router.post('/', auth.isAdmin, async (req, res) => {
     } catch (error) {
         console.log(error);
         if(error.code == 11000){
-            res.status(400).send(ResponseUtil.makeMessageResponse(ErrorUtil.makeErrorValidateMessage(JSON.stringify(error.keyValue))));
+            return res.status(400).send(ResponseUtil.makeMessageResponse(ErrorUtil.makeErrorValidateMessage(JSON.stringify(error.keyValue))));
         }
         res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
     }
