@@ -37,11 +37,13 @@ const userSchema = mongoose.Schema({
         type: String,
         unique: true,
         require: [true, stringMessage.id_required],
+        minLength: 3,
         trim: true
     },
     name: {
         type: String,
         required: [true, stringMessage.name_required],
+        minLength: 3,
         trim: true
     },
     email: {

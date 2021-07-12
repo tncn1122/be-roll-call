@@ -25,11 +25,13 @@ const classInfoSchema = mongoose.Schema({
         type: String,
         unique: true,
         require: true,
+        minLength: 3,
         trim: true
     },
     name: {
         type: String,
         required: true,
+        minLength: 3,
         trim: true
     },
     students: [{
@@ -46,6 +48,7 @@ const classInfoSchema = mongoose.Schema({
     },
     room: {
         type: String,
+        minLength: 3,
         require: true,
     },
     monitors: [{
@@ -62,10 +65,20 @@ const classInfoSchema = mongoose.Schema({
     shift: {
         type: Number,
         require: true,
+        enum: {
+            values: [0, 1],
+            message: "Buổi không đúng!"
+        },
+        default: 0,
     },
     dayOfWeek: {
         type: Number,
         required: true,
+        enum: {
+            values: [2, 3, 4, 5, 6, 7],
+            message: "Ngày không đúng!"
+        },
+        default: 0,
     },
     days: {
         type: Number,
