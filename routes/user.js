@@ -168,6 +168,8 @@ router.put('/:id/password', auth.isUser, async (req, res) => {
         let current_user = req.user;
         let user_id = req.params.id;
         userUtil.onlyAdminAndOwner(current_user, user_id)
+
+
         
         if (current_user.role !== 'admin'){
             // check if old password is correct  
@@ -184,10 +186,11 @@ router.put('/:id/password', auth.isUser, async (req, res) => {
         }
 
         // validate pass
-        userUtil.passwordValidate(userUpdate.password);
+        const new_password = userUpdate.password ||  "";
+        userUtil.passwordValidate(new_password);
 
         // update password
-        current_user.password = await bcrypt.hash(userUpdate.password, 8);
+        current_user.password = await bcrypt.hash(new_password, 8);
         await User.findByIdAndUpdate(current_user._id, current_user, function(err, raw){
             if(!err){
                 res.status(201).send(ResponseUtil.makeResponse(raw));
