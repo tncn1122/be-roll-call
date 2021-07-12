@@ -100,7 +100,7 @@ router.post('/', auth.isAdmin, async (req, res) => {
 })
 
 /**
- * Chỉnh sửa thông tin tài khoản. Chỉ những tài khoản đã đăng nhập mới thực hiện được. Một tài khoản chỉ có thể thay đổi thông tin của chính tài khoản đó.
+ * Chỉnh sửa thông tin tài khoản. Chỉ những tài khoản đã đăng nhập mới thực hiện được. Một tài khoản chỉ có thể thay đổi thông tin của chính tài khoản đó. Admin có thể thay đổi thông tin của tài khoản khác.
  * @route PUT /users/{id}
  * @group User
  * @param {string} id.path.required - ID của tài khoản.
@@ -124,8 +124,8 @@ router.put('/:id', auth.isUser, async (req, res) => {
         delete userUpdate['classes'];
         delete userUpdate['_id'];
         delete userUpdate['__v'];
-        await User.findByIdAndUpdate(user._id, userUpdate, function(err, raw){
-            if(!err){
+        await User.findOneAndUpdate({id: user_id}, userUpdate, function(error, raw){
+            if(!error){
                 raw.save();
                 res.status(201).send(ResponseUtil.makeResponse(raw));
             }
@@ -136,11 +136,13 @@ router.put('/:id', auth.isUser, async (req, res) => {
         
         
     } catch (error) {
-        //console.log(error);
+        console.log(error);
         if(error.code == 11000){
+            
             res.status(400).send(ResponseUtil.makeMessageResponse(ErrorUtil.makeErrorValidateMessage(JSON.stringify(error.keyValue))));
         }
         else{
+            
             res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
         }
         

@@ -28,6 +28,17 @@ const classInfoSchema = mongoose.Schema({
         type: Int32,
         required: true,
     },
+    room: {
+        type: String,
+        require: true,
+    },
+    monitors: [{
+        type: User,
+        require: true
+    }],
+
+    
+    // schedule
     dateStart: {
         type: Date,
         required: true,
@@ -44,21 +55,6 @@ const classInfoSchema = mongoose.Schema({
         type: Int32,
         required: true,
     },
-    room: {
-        type: classRoom,
-        require: true,
-    },
-    monitors: [{
-        type: User,
-        require: true
-    }],
-    qrUrl: {
-        type: String,
-    },
-    reports: [{
-        type: User,
-        require: true
-    }]
 })
 
 //
