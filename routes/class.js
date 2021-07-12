@@ -65,7 +65,7 @@ const userUtil = require('../util/UserUtils')
 /**
  * Xóa một lớp khỏi hệ thống dựa vào ID, chỉ có Admin mới thực hiện được chức năng này.
  * @route DELETE /classes/{id}
- * @group Classes
+ * @group Class
  * @param {string} id.path.required ID của lớp cần xóa.
  * @returns {Error.model} 200 - "Xóa thành công!" nếu thao tác thành công.
  * @returns {Error.model} 500 - Lỗi.
