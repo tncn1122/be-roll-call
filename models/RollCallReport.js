@@ -1,4 +1,4 @@
-const { Int32 } = require('mongodb');
+const { integer } = require('mongodb');
 const mongoose = require('mongoose');
 const User = require('./User');
 
@@ -26,7 +26,7 @@ const reportschema = mongoose.Schema({
             require: true
         },
         status: {
-            type: Int32,
+            type: integer,
             require: true
         }
     }]

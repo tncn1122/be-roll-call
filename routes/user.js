@@ -184,10 +184,10 @@ router.put('/:id/password', auth.isUser, async (req, res) => {
         }
 
         // validate pass
-        userUtil.passwordValidate(userUpdate.new_password);
+        userUtil.passwordValidate(userUpdate.password);
 
         // update password
-        current_user.password = await bcrypt.hash(userUpdate.new_password, 8);
+        current_user.password = await bcrypt.hash(userUpdate.password, 8);
         await User.findByIdAndUpdate(current_user._id, current_user, function(err, raw){
             if(!err){
                 res.status(201).send(ResponseUtil.makeResponse(raw));

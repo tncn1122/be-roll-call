@@ -17,6 +17,7 @@ var usersRouter = require('./routes/user');
 var studentsRouter = require('./routes/student');
 var teachersRouter = require('./routes/teacher');
 var dashboardRouter = require('./routes/dashboard');
+var classesRouter = require('./routes/class');
 
 
 // Config Swagger
@@ -51,6 +52,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/students', studentsRouter);
+app.use('/api/classes', classesRouter);
 app.use('/api/teachers', teachersRouter);
 app.use('/api/dashboard', dashboardRouter);
 
