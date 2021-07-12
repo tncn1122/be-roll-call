@@ -57,7 +57,9 @@ router.get('/', auth.isAdmin, async(req, res) => {
 router.post('/', auth.isAdmin, async (req, res) => {
     // Create a new user
     try {
-        const user = new User(req.body);
+        let userInfo = req.body;
+        userInfo.avtUrl = "";
+        const user = new User(userInfo);
         user.qrUrl = QR.createQR(user.id)
         await user.generateAuthToken();
         await user.save();

@@ -11,16 +11,16 @@ const userUtil = require('../util/UserUtils')
 
 
 /**
- * @typedef ListClasses
+ * @typedef ListReports
  * @property {integer} count.required - số lượng phần tử
- * @property {Array.<Class>} data.required - các phần tử
+ * @property {Array.<RollCallReport>} data.required - các phần tử
  */
 
 /**
- * Tạo lớp. Chỉ có tài khoản có quyền Admin mới thực hiện được chức năng này.
- * @route POST /classes/
- * @group Class
- * @param {ClassInput.model} class_info.body.required - Body là file json chứa thông tin lớp, những mục (students, monitors) có thể không cần gửi trong json.
+ * Tạo danh sách điểm danh. Chỉ có tài khoản có quyền Admin hoặc teacher mới thực hiện được chức năng này.
+ * @route POST /reports/
+ * @group Report
+ * @param {string} class_id.body.required - .
  * @returns {ListClasses.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
@@ -29,10 +29,9 @@ const userUtil = require('../util/UserUtils')
  router.post('/', auth.isAdmin, async (req, res) => {
     // Create a new user
     try {
-        // const classInfo = new ClassInfo(req.body);
-        // await classInfo.save();
-        // res.status(201).send(ResponseUtil.makeResponse(classInfo));
-        res.status(200).send(ResponseUtil.makeMessageResponse("Ok thơm bơ"))
+        const classInfo = new ClassInfo(req.body);
+        await classInfo.save();
+        res.status(201).send(ResponseUtil.makeResponse(classInfo));
     } catch (error) {
         console.log(error);
         if(error.code == 11000){

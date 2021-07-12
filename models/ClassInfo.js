@@ -4,6 +4,21 @@ const classRoom = require('./ClassRoom');
 const User = require('./User');
 
 /**
+ * @typedef ClassInput
+ * @property {string} id.required
+ * @property {string} name.required
+ * @property {string} teacher_id.required
+ * @property {string} room.required
+ * @property {Array.<string>} students_id.required
+ * @property {Array.<string>} monitors_id.required
+ * @property {integer} credit.required
+ * @property {enum} dayOfWeek.required  - Một trong các giá trị sau đây: - eg: 2, 3, 4, 5, 6, 7
+ * @property {enum} shift.required - Một trong các giá trị sau đây: - eg: 0, 1
+ * @property {integer} days.required
+ * @property {string} dateStart.required
+ */
+
+/**
  * @typedef Class
  * @property {string} id.required
  * @property {string} name.required
@@ -15,7 +30,7 @@ const User = require('./User');
  * @property {enum} dayOfWeek.required  - Một trong các giá trị sau đây: - eg: 2, 3, 4, 5, 6, 7
  * @property {enum} shift.required - Một trong các giá trị sau đây: - eg: 0, 1
  * @property {integer} days.required
- * @property {date} dayStart.required
+ * @property {string} dateStart.required
  */
 
 
@@ -40,7 +55,7 @@ const classInfoSchema = mongoose.Schema({
     }],
     teacher: {
         type: mongoose.Schema.Types.ObjectId, ref: 'User',
-        required: true,
+        require: true
     },
     credit: {
         type: Number,
@@ -59,14 +74,14 @@ const classInfoSchema = mongoose.Schema({
     
     // schedule
     dateStart: {
-        type: Date,
+        type: String,
         required: true,
     },
     shift: {
-        type: Number,
+        type: String,
         require: true,
         enum: {
-            values: [0, 1],
+            values: ['0', '1'],
             message: "Buổi không đúng!"
         },
         default: 0,
@@ -75,7 +90,7 @@ const classInfoSchema = mongoose.Schema({
         type: Number,
         required: true,
         enum: {
-            values: [2, 3, 4, 5, 6, 7],
+            values: ['2', '3', '4', '5', '6', '7'],
             message: "Ngày không đúng!"
         },
         default: 0,
