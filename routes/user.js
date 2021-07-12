@@ -124,10 +124,15 @@ router.put('/:id', auth.isUser, async (req, res) => {
         delete userUpdate['classes'];
         delete userUpdate['_id'];
         delete userUpdate['__v'];
-        await User.findOneAndUpdate({id: user_id}, userUpdate, function(error, raw){
+        await User.findOneAndUpdate({id: user_id}, userUpdate, {runValidators: true}, function(error, raw){
             if(!error){
-                raw.save();
-                res.status(201).send(ResponseUtil.makeResponse(raw));
+                if(raw){
+                    raw.save();
+                    res.status(201).send(ResponseUtil.makeResponse(raw));
+                }
+                else{
+                    return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found));
+                }
             }
             else{
                 res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
