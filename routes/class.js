@@ -18,7 +18,7 @@ const userUtil = require('../util/UserUtils')
 
 /**
  * Tạo lớp. Chỉ có tài khoản có quyền Admin mới thực hiện được chức năng này.
- * @route POST /class/
+ * @route POST /classes/
  * @group Class
  * @param {Class.model} class.body.required - Body là file json chứa thông tin lớp, những mục (students, monitors) có thể không cần gửi trong json.
  * @returns {ListClasses.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
@@ -39,6 +39,27 @@ const userUtil = require('../util/UserUtils')
         }
         res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
     }
+})
+
+/**
+ * Get tất cả lớp hiện có. Chỉ có tài khoản quyền Admin mới thực hiện được chức năng này.
+ * @route GET /classes/
+ * @group Class
+ * @returns {ListClasses.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
+ * @returns {Error.model} 500 - Lỗi.
+ * @security Bearer
+ */
+ router.get('/', auth.isAdmin, async(req, res) => {
+    ClassInfo.find({}, function(err, classes){
+        //console.log(users);
+        if(err){
+            res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
+        }
+        else{
+            console.log((classes));
+            res.status(200).send(ResponseUtil.makeResponse(classes))
+        }
+    });
 })
 
 
