@@ -4,6 +4,7 @@ let options = {
         info: {
             title: 'Roll-call API',
             version: "1.0.0",
+            description: "Author: Tran Nguyen Chi Nhan"
         },
         host: process.env.HOST,
         basePath: '/api',
