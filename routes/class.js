@@ -40,7 +40,7 @@ const userUtil = require('../util/UserUtils')
         classInfo.students = userUtil.createStudentList(req.body.students);
         classInfo.monitors = [];
         if (req.body.hasOwnProperty('monitors')){
-            classInfo.monitors = userUtil.createStudentList(req.body.monitors);
+            classInfo.monitors = await userUtil.createStudentList(req.body.monitors);
         }
         
         const newClass = new ClassInfo(req.body);
@@ -101,6 +101,34 @@ const userUtil = require('../util/UserUtils')
     catch(err){
         log(err)
         res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
+    }
+})
+
+/**
+ * Lấy thông tin của một lớp, user đã đăng nhập mới thực hiện được chức năng này.
+ * @route GET /classes/{id}
+ * @group Class
+ * @param {string} id.path.required ID của lớp cần lấy thông tin.
+ * @returns {Error.model} 200 - "Xóa thành công!" nếu thao tác thành công.
+ * @returns {Error.model} 500 - Lỗi.
+ * @security Bearer
+ */
+ router.get('/:id', auth.isUser, async(req, res) => {
+    try{
+        let classId = req.params.id;
+        const classInfo = await classUtil.findClass(classId);
+        console.log(classInfo);
+        if (classInfo){
+            res.status(200).send(ResponseUtil.makeResponse(classInfo));
+        }
+        else{
+            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.class_not_found));
+        }
+        
+    }
+    catch(err){
+        log(err)
+        res.status(500).send(ResponseUtil.makeMessageResponse(error.message));
     }
 })
 

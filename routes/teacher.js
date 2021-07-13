@@ -51,7 +51,7 @@ const router = express.Router()
     try {
         let userResponse = await User.findOne({id: req.params.id, role: 'teacher'})
         if(!userResponse){
-            res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
+            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
         }
         else{
             if((req.user.role !== "admin") && req.user.id !== req.params.id){

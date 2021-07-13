@@ -1,6 +1,11 @@
 const stringMessage = require('../value/string')
 const ClassInfo = require('../models/ClassInfo');
 
+async function findClass(classId){
+    const classInfo = await ClassInfo.findOne({id: classId });
+    return classInfo;
+}
+
 function formatDate(date, stringDate = "DD/MM/YYYY"){
     return moment(date).format(stringDate);
 }
@@ -22,9 +27,25 @@ function createBaseClassInfo(classInfo){
     };
 }
 
+async function createListClass(classIdList){
+    let class_list = [];
+
+    if (classIdList){
+        for (const class_id of classIdList){
+            const classInfo = await User.findOne({id: class_id.id});
+            if(!classInfo){
+                throw new Error(stringMessage.class_not_found + " Lớp: " + class_id);
+            }
+            class_list.push(classInfo);
+        }
+    }
+    return class_list;
+}
+
 
 module.exports = {
     currentDate,
     formatDate,
-    createBaseClassInfo
+    createBaseClassInfo,
+    findClass
 }

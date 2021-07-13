@@ -52,12 +52,43 @@ const router = express.Router()
     try {
         let userResponse = await User.findOne({id: req.params.id, role: 'student'})
         if(!userResponse){
-            res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
+            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
         }
         else{
             if((req.user.role !== "admin") && req.user.id !== req.params.id){
                 userResponse = userUtil.hideUserInfo(userResponse);
             }
+            res.status(200).send(ResponseUtil.makeResponse(userResponse));
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
+    }
+})
+
+
+/**
+ * Xem thông tin lớp của một sinh viên. Chỉ những tài khoản đã đăng nhập mới thực hiện được chức năng này. Chỉ tài khoản admin hoặc tài khoản chủ sở hữu mới dùng được chức năng này.
+ * @route GET /students/{id}/class
+ * @group Student
+ * @param {string} id.path.required ID của tài khoản sinh viên.
+ * @returns {ListUsers.model} 200 - Thông tin tài khoản ứng với tài khoản đó.
+ * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
+ * @security Bearer
+ */
+ router.get('/:id/class', auth.isUser, async (req, res) => {
+    try {
+        let userResponse = await User.findOne({id: req.params.id, role: 'student'})
+        if(!userResponse){
+            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
+        }
+        else{
+            if((req.user.role !== "admin") && req.user.id !== req.params.id){
+                return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.not_auth));
+            }
+
+            
+
             res.status(200).send(ResponseUtil.makeResponse(userResponse));
         }
     } catch (error) {

@@ -40,7 +40,7 @@ async function findUser(user_id){
     return user;
 }
 
-function createStudentList(student_id_list){
+async function createStudentList(student_id_list){
     let student_list = [];
 
     if (student_id_list){

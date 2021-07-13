@@ -5,6 +5,7 @@ module.exports = {
     invalid_password_format: "Mật khẩu phải ít nhất 5 kí tự!",
     duplicate_credentials: "đã tồn tại!", 
     user_not_found: "Không tìm thấy người dùng!",
+    class_not_found: "Không tìm thấy lớp!",
     wrong_password: "Mật khẩu đã nhập không đúng!",
     deleted_successfully: "Xóa thành công!",
 
