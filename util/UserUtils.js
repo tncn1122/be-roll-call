@@ -40,11 +40,27 @@ async function findUser(user_id){
     return user;
 }
 
+function createStudentList(student_id_list){
+    let student_list = [];
+
+    if (student_id_list){
+        for (const student_id of student_id_list){
+            const student = User.findOne({id: student_id.id});
+            if(!student){
+                throw new Error(stringMessage.user_not_found + " Sinh viên: " + student_id.id);
+            }
+            student_list.push(student);
+        }
+    }
+    return student_list;
+}
+
 
 module.exports = {
     hideUserInfo,
     passwordValidate,
     generateAvatar,
     onlyAdminAndOwner,
-    findUser
+    findUser,
+    createStudentList
 }

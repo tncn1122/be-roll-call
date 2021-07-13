@@ -4,9 +4,11 @@ const ResponseUtil = require('../util/Response');
 var express = require('express');
 const bcrypt = require('bcryptjs')
 const ClassInfo = require('../models/ClassInfo');
+const User = require('../models/User');
 const stringMessage = require('../value/string');
 const QR = require('../util/QR')
 const router = express.Router()
+const classUtil = require('../util/ClassUtils')
 const userUtil = require('../util/UserUtils')
 
 
@@ -20,7 +22,7 @@ const userUtil = require('../util/UserUtils')
  * Tạo lớp. Chỉ có tài khoản có quyền Admin mới thực hiện được chức năng này.
  * @route POST /classes/
  * @group Class
- * @param {ClassInput.model} class_info.body.required - Body là file json chứa thông tin lớp, những mục (students, monitors) có thể không cần gửi trong json.
+ * @param {Class.model} class_info.body.required - Body là file json chứa thông tin lớp, những mục (students, monitors) có thể không cần gửi trong json.
  * @returns {ListClasses.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
@@ -29,10 +31,22 @@ const userUtil = require('../util/UserUtils')
  router.post('/', auth.isAdmin, async (req, res) => {
     // Create a new user
     try {
-        // const classInfo = new ClassInfo(req.body);
-        // await classInfo.save();
-        // res.status(201).send(ResponseUtil.makeResponse(classInfo));
-        res.status(200).send(ResponseUtil.makeMessageResponse("Ok thơm bơ"))
+        let classInfo = classUtil.createBaseClassInfo(req.body);
+        const teacher = userUtil.findUser(req.body.teacher.id);
+        if(!teacher){
+            return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found + "Giảng viên: " + req.body.teacher.id));
+        }
+        classInfo.teacher = teacher;
+        classInfo.students = userUtil.createStudentList(req.body.students);
+        classInfo.monitors = [];
+        if (req.body.hasOwnProperty('monitors')){
+            classInfo.monitors = userUtil.createStudentList(req.body.monitors);
+        }
+        
+        const newClass = new ClassInfo(req.body);
+        await newClass.save();
+        res.status(201).send(ResponseUtil.makeResponse(classInfo));
+        // res.status(200).send(ResponseUtil.makeMessageResponse("Ok thơm bơ"))
     } catch (error) {
         console.log(error);
         if(error.code == 11000){
