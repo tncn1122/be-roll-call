@@ -29,7 +29,7 @@ const userUtil = require('../util/UserUtils')
  * @security Bearer
  */
  router.post('/', auth.isAdmin, async (req, res) => {
-    // Create a new user
+    // Create a new class
     try {
         let classInfo = classUtil.createBaseClassInfo(req.body);
         const teacher = userUtil.findUser(req.body.teacher.id);
@@ -37,7 +37,10 @@ const userUtil = require('../util/UserUtils')
             return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found + "Giảng viên: " + req.body.teacher.id));
         }
         classInfo.teacher = teacher;
-        classInfo.students = userUtil.createStudentList(req.body.students);
+        classInfo.students = [];
+        if (req.body.hasOwnProperty('students')){
+            classInfo.students = userUtil.createStudentList(req.body.students);
+        }
         classInfo.monitors = [];
         if (req.body.hasOwnProperty('monitors')){
             classInfo.monitors = await userUtil.createStudentList(req.body.monitors);
