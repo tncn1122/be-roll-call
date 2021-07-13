@@ -83,7 +83,7 @@ const userUtil = require('../util/UserUtils')
             console.log((classes));
             res.status(200).send(ResponseUtil.makeResponse(classes))
         }
-    }).populate('students').populate('monitors');
+    }).populate('students').populate('monitors').populate('teacher');
 })
 
 /**
@@ -109,8 +109,7 @@ const userUtil = require('../util/UserUtils')
         
     }
     catch(err){
-        log(err)
-        res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
+        res.status(500).send(ResponseUtil.makeMessageResponse(err.message))
     }
 })
 
@@ -127,7 +126,6 @@ const userUtil = require('../util/UserUtils')
     try{
         let classId = req.params.id;
         const classInfo = await findClass(classId);
-        console.log(classInfo);
         if (classInfo){
             res.status(200).send(ResponseUtil.makeResponse(classInfo));
         }
@@ -199,6 +197,17 @@ async function updateStudentClass(student_state_list, class_id){
     }
     return Promise.all(student_list);
 }
+
+router.get('/delete/all', async(req, res) => {
+    try{
+      
+        await ClassInfo.deleteMany({})
+        res.status(200).send(ResponseUtil.makeMessageResponse("Delete success"))
+    }
+    catch(err){
+        res.status(500).send(ResponseUtil.makeMessageResponse(err.message))
+    }
+})
 
 
 module.exports = router;
