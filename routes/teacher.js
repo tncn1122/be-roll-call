@@ -70,7 +70,7 @@ const router = express.Router()
 /**
  * Xem thông tin lớp của một giảng viên. Chỉ những tài khoản đã đăng nhập mới thực hiện được chức năng này. Chỉ tài khoản admin hoặc tài khoản chủ sở hữu mới dùng được chức năng này.
  * @route GET /teachers/{id}/class
- * @group Student
+ * @group Teacher
  * @param {string} id.path.required ID của tài khoản giảng viên.
  * @returns {ListClasses.model} 200 - Thông tin tài khoản ứng với tài khoản đó.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
