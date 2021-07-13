@@ -4,6 +4,7 @@ const ResponseUtil = require('../util/Response');
 var express = require('express');
 const bcrypt = require('bcryptjs')
 const User = require('../models/User');
+const ClassInfo = require('../models/ClassInfo');
 const stringMessage = require('../value/string');
 const QR = require('../util/QR')
 const router = express.Router()
@@ -72,7 +73,7 @@ const router = express.Router()
  * @route GET /students/{id}/class
  * @group Student
  * @param {string} id.path.required ID của tài khoản sinh viên.
- * @returns {ListUsers.model} 200 - Thông tin tài khoản ứng với tài khoản đó.
+ * @returns {ListClasses.model} 200 - Thông tin tài khoản ứng với tài khoản đó.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer
  */
@@ -86,10 +87,7 @@ const router = express.Router()
             if((req.user.role !== "admin") && req.user.id !== req.params.id){
                 return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.not_auth));
             }
-
-            
-
-            res.status(200).send(ResponseUtil.makeResponse(userResponse));
+            res.status(200).send(ResponseUtil.makeResponse(await createClassList(userResponse.classes)));
         }
     } catch (error) {
         console.log(error);
@@ -97,5 +95,28 @@ const router = express.Router()
     }
 })
 
+
+async function createClassList(class_id_list){
+    let class_list = [];
+
+    if (class_id_list){
+        for (const class_id of class_id_list){
+            let classInfo = findClass(class_id);
+            console.log(class_id);
+            if(classInfo){
+                class_list.push(classInfo);
+            }
+            else{
+                throw new Error(stringMessage.class_not_found + " Môn học: " + class_id.id);
+            }  
+        }
+    }
+    return Promise.all(class_list);
+}
+
+async function findClass(classId){
+    const classInfo = await ClassInfo.findOne({id: classId });
+    return classInfo;
+}
 
 module.exports = router;

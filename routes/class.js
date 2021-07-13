@@ -52,8 +52,11 @@ const userUtil = require('../util/UserUtils')
 
         // update student
         if (req.body.hasOwnProperty('students')){
-            updateStudentClass(req.body.students.map(student_id => [student_id.id, 1]), classInfo.id);
+            await updateStudentClass(req.body.students.map(student_id => [student_id.id, 1]), classInfo.id);
         }
+
+        // update teacher
+        await updateTeacherClass(teacher.id, 1, classInfo.id);
         
         res.status(201).send(ResponseUtil.makeResponse(classInfo));
         // res.status(200).send(ResponseUtil.makeMessageResponse("Ok thơm bơ"))
@@ -197,6 +200,31 @@ async function updateStudentClass(student_state_list, class_id){
         }
     }
     return Promise.all(student_list);
+}
+
+async function updateTeacherClass(teacher_id, state, class_id){
+    let current_user = await User.findOne({id: teacher_id});
+    if (state == 1){
+        // add class
+        current_user.classes.push(class_id);
+    }
+    else{
+        // remove class
+        current_user.classes = current_user.classes.filter(item => item !== class_id);
+    }
+    await User.findOneAndUpdate({id: teacher_id}, current_user, function(error, raw){
+        if(!error){
+            if(raw){
+                raw.save();
+            }
+            else{
+                throw new Error(stringMessage.user_not_found);
+            }
+        }
+        else{
+            throw new Error(ResponseUtil.makeMessageResponse(error.message))
+        }
+    });
 }
 
 router.get('/delete/all', async(req, res) => {
