@@ -110,6 +110,7 @@ const classInfoSchema = mongoose.Schema({
 })
 
 
+
 //
 const ClassInfo = mongoose.model('ClassInfo', classInfoSchema)
 

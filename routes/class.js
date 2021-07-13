@@ -102,7 +102,7 @@ const userUtil = require('../util/UserUtils')
  router.delete('/:id', auth.isAdmin, async(req, res) => {
     try{
         let classId = req.params.id;
-        const classInfo = await ClassInfo.findOne({in: classId});
+        const classInfo = await ClassInfo.findOne({id: classId});
         if (classInfo){
             await User.deleteOne({id: classId})
             res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage.deleted_successfully))
@@ -110,6 +110,51 @@ const userUtil = require('../util/UserUtils')
         else{
             res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.class_not_found))
         }
+        
+    }
+    catch(err){
+        res.status(500).send(ResponseUtil.makeMessageResponse(err.message))
+    }
+})
+
+/**
+ * Sửa một lớp dựa vào ID, chỉ có Admin mới thực hiện được chức năng này.
+ * @route PUT /classes/{id}
+ * @group Class
+ * @param {Class.model} class.body.required ID của lớp cần sửa.
+ * @returns {Error.model} 200 - "Xóa thành công!" nếu thao tác thành công.
+ * @returns {Error.model} 500 - Lỗi.
+ * @security Bearer
+ */
+ router.put('/:id', auth.isAdmin, async(req, res) => {
+    try{
+        let classUpdate = req.body;
+        let class_id = req.params.id;
+        const classInfo = await ClassInfo.findOne({id: class_id});
+        delete classUpdate['id'];
+        if (classInfo.teacher !== classUpdate.teacher){
+            // remove class from old teacher
+            await updateTeacherClass(teacher.id, 0, classInfo.id);
+            // add class to new teacher
+            await updateTeacherClass(teacher.id, 1, classInfo.id);
+        }
+
+
+        await ClassInfo.findOneAndUpdate({id: classUpdate.id}, classUpdate, {runValidators: true}, function(error, raw){
+            if(!error){
+                if(raw){
+                    raw.save();
+                    updateStudentAfterChange(classInfo.students, classUpdate.students, class_id);
+                    res.status(201).send(ResponseUtil.makeResponse(raw));
+                }
+                else{
+                    return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found));
+                }
+            }
+            else{
+                res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
+            }
+        });
         
     }
     catch(err){
@@ -168,6 +213,26 @@ async function createStudentList(student_id_list){
 async function findClass(classId){
     const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors').populate('teacher');
     return classInfo;
+}
+
+async function updateStudentAfterChange(old_student_list, new_student_list, class_id){
+    const simple_old_students_id = old_student_list.map(item => item.id);
+    const simple_new_students_id = new_student_list.map(item => item.id);
+    const update_state = new Map();
+    for (id of simple_old_students_id){
+        update_state.set(id, 0);
+    }
+
+    for (id of simple_new_students_id){
+        if (update_state.has(id)){
+            update_state.delete(id);
+        }
+        else{
+            update_state.set(id, 1);
+        }
+    }
+
+    await updateStudentClass(update_state, class_id);
 }
 
 async function updateStudentClass(student_state_list, class_id){
