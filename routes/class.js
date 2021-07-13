@@ -131,6 +131,7 @@ const userUtil = require('../util/UserUtils')
         let classUpdate = req.body;
         let class_id = req.params.id;
         const classInfo = await ClassInfo.findOne({id: class_id});
+        
         delete classUpdate['id'];
         if (classInfo.teacher !== classUpdate.teacher){
             // remove class from old teacher

@@ -8,6 +8,7 @@ module.exports = {
     class_not_found: "Không tìm thấy lớp!",
     wrong_password: "Mật khẩu đã nhập không đúng!",
     deleted_successfully: "Xóa thành công!",
+    class_change_timeup: "Đã hết thời gian cập nhật thông tin lớp!",
 
     //user validate
     id_required: "ID không được để trống!",

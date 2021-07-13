@@ -15,6 +15,11 @@ function currentDate(){
     return formatDate(moment());
 }
 
+function isChangeExpired(startDate){
+    const now = moment();
+    const startDateMM = moment(startDate, 'DD-MM-YYYY');
+}
+
 function createBaseClassInfo(classInfo){
     return {
         id: classInfo.id || "",
