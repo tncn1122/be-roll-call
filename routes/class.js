@@ -51,9 +51,10 @@ const userUtil = require('../util/UserUtils')
         await newClass.save();
 
         // update student
-        updateStudentClass(req.body.students.map(student_id => [student_id.id, 1]), classInfo.id);
-
-
+        if (req.body.hasOwnProperty('students')){
+            updateStudentClass(req.body.students.map(student_id => [student_id.id, 1]), classInfo.id);
+        }
+        
         res.status(201).send(ResponseUtil.makeResponse(classInfo));
         // res.status(200).send(ResponseUtil.makeMessageResponse("Ok thơm bơ"))
     } catch (error) {
