@@ -85,7 +85,7 @@ router.post('/', auth.isAdmin, async (req, res) => {
  */
  router.get('/:id', auth.isUser, async (req, res) => {
     try {
-        let userResponse = await User.findOne({id: req.params.id})
+        let userResponse = findUser(req.params.id);
         if(!userResponse){
             res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
         }
@@ -304,7 +304,8 @@ router.get('/admin/reset', async(req, res) => {
 router.delete('/:id', auth.isAdmin, async(req, res) => {
     try{
         let userId = req.params.id;
-        if (userUtil.findUser(userId)){
+        const user = await User.findOne({id: userId});
+        if (user){
             await User.deleteOne({id: userId})
             res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage.deleted_successfully))
         }
@@ -330,6 +331,13 @@ router.get('/database/delete/:role', async(req, res) => {
         res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })
+
+
+
+async function findUser(userId){
+    return await User.findOne({id: userId});
+}
+
 
 module.exports = router;
 

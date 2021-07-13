@@ -3,7 +3,7 @@ import requests
 
 fileLink = "DS.xlsx"
 url = "http://localhost:3000/api/users/"
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDg2YWEyNDA5OWQxOTViNjBmOWI3YjgiLCJpYXQiOjE2MjYwMTQxMTN9.3eMWqmEd7HlJnnY6Y4gZRvIfSQf_FHlaQZzp-wF16C4"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MGVjMzc2OTZiNmQzNDM4YjhmYWYwYjQiLCJpYXQiOjE2MjYwOTM0MTd9.KSJt1eYUcTzRLnzjTGZx55MaOsDdc1E1hpTCn220gmw"
 
 def create_account(filename):
     loc = (filename)

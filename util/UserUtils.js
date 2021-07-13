@@ -35,9 +35,8 @@ function generateAvatar(name){
     }
 }
 
-async function findUser(user_id){
-    const user = await User.findOne({id: user_id });
-    return user;
+function findUser(userId){
+    return User.findOne({id: userId});
 }
 
 async function createStudentList(student_id_list){
@@ -45,11 +44,14 @@ async function createStudentList(student_id_list){
 
     if (student_id_list){
         for (const student_id of student_id_list){
-            const student = User.findOne({id: student_id.id});
-            if(!student){
-                throw new Error(stringMessage.user_not_found + " Sinh viên: " + student_id.id);
-            }
-            student_list.push(student);
+            User.findOne({id: student_id.id}).then(student =>{
+                if(student){
+                    student_list.push(student);
+                }
+                else{
+                    throw new Error(stringMessage.user_not_found + " Sinh viên: " + student_id.id);
+                }
+            })    
         }
     }
     return student_list;

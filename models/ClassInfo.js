@@ -3,6 +3,29 @@ const mongoose = require('mongoose');
 const classRoom = require('./ClassRoom');
 const User = require('./User');
 
+
+
+/**
+ * @typedef UserClass
+ * @property {string} id.required
+ */
+
+/**
+ * @typedef ClassInput
+ * @property {string} id.required
+ * @property {string} name.required
+ * @property {UserClass.model} teacher.required
+ * @property {string} room.required
+ * @property {Array.<UserClass>} students.required
+ * @property {Array.<UserClass>} monitors.required
+ * @property {integer} credit.required
+ * @property {enum} dayOfWeek.required  - Một trong các giá trị sau đây: - eg: 2, 3, 4, 5, 6, 7
+ * @property {enum} shift.required - Một trong các giá trị sau đây: - eg: 0, 1
+ * @property {integer} days.required
+ * @property {string} dateStart.required
+ */
+
+
 /**
  * @typedef Class
  * @property {string} id.required
@@ -72,7 +95,7 @@ const classInfoSchema = mongoose.Schema({
         default: 0,
     },
     dayOfWeek: {
-        type: Number,
+        type: String,
         required: true,
         enum: {
             values: ['2', '3', '4', '5', '6', '7'],
@@ -85,6 +108,7 @@ const classInfoSchema = mongoose.Schema({
         required: true,
     },
 })
+
 
 //
 const ClassInfo = mongoose.model('ClassInfo', classInfoSchema)

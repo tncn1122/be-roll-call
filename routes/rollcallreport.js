@@ -74,7 +74,8 @@ const userUtil = require('../util/UserUtils')
  router.delete('/:id', auth.isAdmin, async(req, res) => {
     try{
         let classId = req.params.id;
-        if (userUtil.findUser(classId)){
+        const classInfo = ClassInfo.findOne({id: classId});
+        if (classInfo){
             await User.deleteOne({id: classId})
             res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage.deleted_successfully))
         }

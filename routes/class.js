@@ -22,7 +22,7 @@ const userUtil = require('../util/UserUtils')
  * Tạo lớp. Chỉ có tài khoản có quyền Admin mới thực hiện được chức năng này.
  * @route POST /classes/
  * @group Class
- * @param {Class.model} class_info.body.required - Body là file json chứa thông tin lớp, những mục (students, monitors) có thể không cần gửi trong json.
+ * @param {ClassInput.model} class_info.body.required - Body là file json chứa thông tin lớp, những mục (students, monitors) có thể không cần gửi trong json.
  * @returns {ListClasses.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
@@ -32,22 +32,28 @@ const userUtil = require('../util/UserUtils')
     // Create a new class
     try {
         let classInfo = classUtil.createBaseClassInfo(req.body);
-        const teacher = userUtil.findUser(req.body.teacher.id);
+        
+        const teacher = await User.findOne({id: req.body.teacher.id});
         if(!teacher){
             return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found + "Giảng viên: " + req.body.teacher.id));
         }
         classInfo.teacher = teacher;
         classInfo.students = [];
         if (req.body.hasOwnProperty('students')){
-            classInfo.students = userUtil.createStudentList(req.body.students);
+            classInfo.students = await createStudentList(req.body.students);
         }
         classInfo.monitors = [];
         if (req.body.hasOwnProperty('monitors')){
-            classInfo.monitors = await userUtil.createStudentList(req.body.monitors);
+            classInfo.monitors = await createStudentList(req.body.monitors);
         }
-        
-        const newClass = new ClassInfo(req.body);
+        console.log(classInfo);
+        const newClass = new ClassInfo(classInfo);
         await newClass.save();
+
+        // update student
+        updateStudentClass(req.body.students.map(student_id => [student_id.id, 1]), classInfo.id);
+
+
         res.status(201).send(ResponseUtil.makeResponse(classInfo));
         // res.status(200).send(ResponseUtil.makeMessageResponse("Ok thơm bơ"))
     } catch (error) {
@@ -77,7 +83,7 @@ const userUtil = require('../util/UserUtils')
             console.log((classes));
             res.status(200).send(ResponseUtil.makeResponse(classes))
         }
-    });
+    }).populate('students').populate('monitors');
 })
 
 /**
@@ -92,12 +98,13 @@ const userUtil = require('../util/UserUtils')
  router.delete('/:id', auth.isAdmin, async(req, res) => {
     try{
         let classId = req.params.id;
-        if (userUtil.findUser(classId)){
+        const classInfo = await ClassInfo.findOne({in: classId});
+        if (classInfo){
             await User.deleteOne({id: classId})
             res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage.deleted_successfully))
         }
         else{
-            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
+            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.class_not_found))
         }
         
     }
@@ -119,7 +126,7 @@ const userUtil = require('../util/UserUtils')
  router.get('/:id', auth.isUser, async(req, res) => {
     try{
         let classId = req.params.id;
-        const classInfo = await classUtil.findClass(classId);
+        const classInfo = await findClass(classId);
         console.log(classInfo);
         if (classInfo){
             res.status(200).send(ResponseUtil.makeResponse(classInfo));
@@ -130,9 +137,68 @@ const userUtil = require('../util/UserUtils')
         
     }
     catch(err){
-        log(err)
+        console.log(err)
         res.status(500).send(ResponseUtil.makeMessageResponse(error.message));
     }
 })
+
+async function findUser(userId){
+    return await User.findOne({id: userId});
+}
+
+async function createStudentList(student_id_list){
+    let student_list = [];
+
+    if (student_id_list){
+        for (const student_id of student_id_list){
+            let student = findUser(student_id.id);
+            if(student){
+                student_list.push(student);
+            }
+            else{
+                throw new Error(stringMessage.user_not_found + " Sinh viên: " + student_id.id);
+            }  
+        }
+    }
+    return Promise.all(student_list);
+}
+
+async function findClass(classId){
+    const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors').populate('teacher');
+    return classInfo;
+}
+
+async function updateStudentClass(student_state_list, class_id){
+    let student_list = [];
+    console.log((student_state_list));
+    if (student_state_list){
+        for (const [key, value] of student_state_list){
+            let current_user = await User.findOne({id: key});
+            if (value == 1){
+                // add class
+                current_user.classes.push(class_id);
+            }
+            else{
+                // remove class
+                current_user.classes = current_user.classes.filter(item => item !== class_id);
+            }
+            await User.findOneAndUpdate({id: key}, current_user, function(error, raw){
+                if(!error){
+                    if(raw){
+                        raw.save();
+                    }
+                    else{
+                        throw new Error(stringMessage.user_not_found);
+                    }
+                }
+                else{
+                    throw new Error(ResponseUtil.makeMessageResponse(error.message))
+                }
+            });
+        }
+    }
+    return Promise.all(student_list);
+}
+
 
 module.exports = router;

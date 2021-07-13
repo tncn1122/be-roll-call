@@ -5,18 +5,7 @@ const jwt = require('jsonwebtoken')
 const stringMessage = require('../value/string')
 const userUtil = require('../util/UserUtils')
 
-/**
- * @typedef User
- * @property {string} id.required
- * @property {string} name.required
- * @property {string} email.required
- * @property {string} password.required
- * @property {enum} role.required  - Một trong các role sau đây: - eg: student, teacher, admin
- * @property {string} qrUrl
- * @property {string} avtUrl
- * @property {string[]} class
- * @property {string} token
- */
+
 
 /**
  * @typedef UserInfo
@@ -72,10 +61,8 @@ const userSchema = mongoose.Schema({
         require: [true, stringMessage.role_wrong]
     },
     classes: [{
-        class:{
-            type: String,
-            require: true
-        }
+        type: String,
+        require: true
     }],
     qrUrl: {
         type: String,
