@@ -14,8 +14,8 @@ const QR = require('../util/QR');
  * @property {string} id.required
  * @property {string} subject_id.required
  * @property {Array.<UserReport>} user.required
- * @property {string} qrUrl
- * @property {string} date
+ * @property {string} qrUrl.required
+ * @property {string} date.required
  * @property {string} expired.required
  * @property {string} checkinLimitTime.required
  * @property {boolean} allowLate.required
@@ -48,9 +48,13 @@ const reportschema = mongoose.Schema({
         }
     }],
     qrUrl: {
-        type: String
+        type: String,
+        require: true
     },
     date: {
+        type: String
+    },
+    shift:{
         type: String
     },
     expired: {
@@ -67,7 +71,7 @@ const reportschema = mongoose.Schema({
     }
 })
 
-reportschema.pre('save', function(next){
+reportschema.pre('save', async function(next){
     const report = this;
     report.qrUrl = QR.createQR(report.id);
     report.date = reportUtil.getDate();

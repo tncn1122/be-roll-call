@@ -5,16 +5,23 @@ const moment = require('moment')
 
 function getDate(){
     const now = moment();
-    return moment(now, 'DD-MM-YYYY');
+    return formatDate(now);
 }
 
 function genRandomString(seed, length){
     let res = "";
     for(let i = 0; i < length; i++){
-        res += res.charAt(Math.floor(Math.random() * seed.length));
+        res += seed.charAt(Math.floor(Math.random() * seed.length));
     }
     return res;
 }
+
+
+
+function formatDate(date, stringDate = "DD-MM-YYYY"){
+    return moment(date).format(stringDate);
+}
+
 
 function genReportId(class_id, scheduleId){
     return [class_id, scheduleId, genRandomString('0123456789', 6)].join('$');
@@ -23,8 +30,10 @@ function genReportId(class_id, scheduleId){
 function isAbleCreatedReport(dateList){
     if(dateList.length > 0){
         const shift = dateList[0].split('/')[0];
-        const now = shift + '/' + moment();
-        const nowMM = moment(now, 'DD-MM-YYYY');
+        const now = moment();
+        const nowMM = shift + '/' + formatDate(moment(now, 'DD-MM-YYYY'));
+        console.log(nowMM);
+        console.log(dateList);
         return dateList.indexOf(nowMM);
     }
     else{

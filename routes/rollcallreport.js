@@ -44,6 +44,9 @@ const reportUtil = require('../util/ReportUtils')
         if(idx == -1){
             throw new Error(stringMessage.create_report_time_expired);
         }
+        if(await findReport(reportUtil.getDate(), classInfo.shift)){
+            return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.report_exist))
+        }
         let report = {
             id: reportUtil.genReportId(classInfo.id, classInfo.schedule[idx]),
             ...req.body,
@@ -53,8 +56,10 @@ const reportUtil = require('../util/ReportUtils')
                 status: 'absent'
             })),
             expired: classInfo.shift === '0' ? '11:30' : '4:30',
+            shift: classInfo.shift
         }
-        await report.save();
+        const newReport = new RollCallReport(report);
+        await newReport.save();
         res.status(201).send(ResponseUtil.makeResponse(report));
     } catch (error) {
         console.log(error);
@@ -117,6 +122,10 @@ const reportUtil = require('../util/ReportUtils')
 async function findClass(classId){
     const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors').populate('teacher');
     return classInfo;
+}
+async function findReport(date, shift){
+    const report = await RollCallReport.findOne({date: date, shift: shift }).populate('content');
+    return report;
 }
 
 module.exports = router;
