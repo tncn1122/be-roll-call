@@ -159,7 +159,7 @@ const userUtil = require('../util/UserUtils')
             else{
                 return res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
             }
-        });
+        }).populate('students').populate('monitors').populate('teacher');;
     }
     catch(err){
         console.log(err);
