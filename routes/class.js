@@ -136,9 +136,9 @@ const userUtil = require('../util/UserUtils')
         delete classUpdate['id'];
         if (classInfo.teacher !== classUpdate.teacher){
             // remove class from old teacher
-            await updateTeacherClass(teacher.id, 0, classInfo.id);
+            await updateTeacherClass(classInfo.teacher.id, 0, classInfo.id);
             // add class to new teacher
-            await updateTeacherClass(teacher.id, 1, classInfo.id);
+            await updateTeacherClass(classUpdate.teacher.id, 1, classInfo.id);
         }
 
 
