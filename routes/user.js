@@ -85,13 +85,13 @@ router.post('/', auth.isAdmin, async (req, res) => {
  */
  router.get('/:id', auth.isUser, async (req, res) => {
     try {
-        let userResponse = findUser(req.params.id);
+        let userResponse = await findUser(req.params.id);
         if(!userResponse){
             res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
         }
         else{
             if((req.user.role !== "admin") && req.user.id !== req.params.id){
-                userResponse = userUtil.hideUserInfo(userResponse);
+                userResponse = awaituserUtil.hideUserInfo(userResponse);
             }
             res.status(200).send(ResponseUtil.makeResponse(userResponse));
         }

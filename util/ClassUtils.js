@@ -2,6 +2,15 @@ const stringMessage = require('../value/string')
 const ClassInfo = require('../models/ClassInfo');
 const moment = require('moment') 
 
+const week = {
+    2: 'Monday',
+    3: 'Tuesday',
+    4: 'Wednesday',
+    5: 'thursday',
+    6: 'Friday',
+    7: 'Saturday',
+}
+
 async function findClass(classId){
     const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors');
     return classInfo;
@@ -18,7 +27,20 @@ function currentDate(){
 function isChangeExpired(startDate){
     const now = moment();
     const startDateMM = moment(startDate, 'DD-MM-YYYY');
-    return 
+    return;
+}
+
+function genSchedule(startDate, shift, days, dayOfWeek){
+    let schedule = [];
+    let day = moment(startDate);
+    while(day.format('dddd') !== week[dayOfWeek]){
+        day.add(1, 'days');
+    }
+    for (let times = 0; times < days; times++){
+        schedule.push(shift + '/' + formatDate(day));
+        day.add(7, 'days');
+    }
+    return schedule;
 }
 
 function createBaseClassInfo(classInfo){
@@ -55,5 +77,6 @@ module.exports = {
     formatDate,
     createBaseClassInfo,
     createListClass,
-    findClass
+    findClass,
+    genSchedule
 }

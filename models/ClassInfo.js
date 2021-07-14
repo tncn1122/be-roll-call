@@ -2,6 +2,7 @@ const { integer } = require('mongodb');
 const mongoose = require('mongoose');
 const classRoom = require('./ClassRoom');
 const User = require('./User');
+const classUtil = require('../util/ClassUtils')
 
 
 
@@ -39,6 +40,7 @@ const User = require('./User');
  * @property {enum} shift.required - Một trong các giá trị sau đây: - eg: 0, 1
  * @property {integer} days.required
  * @property {string} dateStart.required
+ * @property {string} schedule
  */
 
 
@@ -107,7 +109,18 @@ const classInfoSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
+    schedule:[{
+        type: String
+    }]
 })
+
+
+classInfoSchema.pre('save', function(next){
+    const classInfo = this;
+    classInfo.schedule = classUtil.genSchedule(classInfo.dateStart, classInfo.shift, classInfo.days, classInfo.dayOfWeek);
+    next()  
+})
+
 
 classInfoSchema.pre('remove', async function (next) {
     // remove class in user
@@ -124,6 +137,7 @@ classInfoSchema.pre('remove', async function (next) {
     //console.log("done remove pre");
     next()
 })
+
 
 async function updateUserClass(teacher_id, state, class_id){
     let current_user = await User.findOne({id: teacher_id});
