@@ -149,7 +149,7 @@ const userUtil = require('../util/UserUtils')
             if(!error){
                 if(raw){
                     raw.save();
-                    await updateStudentAfterChange(classUpdate.students, classInfo.students, class_id);
+                    await updateStudentAfterChange(classInfo.students, classUpdate.students, class_id);
                     return res.status(201).send(ResponseUtil.makeResponse(raw));
                 }
                 else{
