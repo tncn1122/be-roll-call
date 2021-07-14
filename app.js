@@ -18,6 +18,7 @@ var studentsRouter = require('./routes/student');
 var teachersRouter = require('./routes/teacher');
 var dashboardRouter = require('./routes/dashboard');
 var classesRouter = require('./routes/class');
+var reportRouter = require('./routes/rollcallreport');
 
 
 // Config Swagger
@@ -55,6 +56,7 @@ app.use('/api/students', studentsRouter);
 app.use('/api/classes', classesRouter);
 app.use('/api/teachers', teachersRouter);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/reports', reportRouter);
 
 
 // catch 404 and forward to error handler

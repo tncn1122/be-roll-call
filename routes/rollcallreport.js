@@ -3,11 +3,14 @@ const ErrorUtil = require('../util/ErrorUtil');
 const ResponseUtil = require('../util/Response');
 var express = require('express');
 const bcrypt = require('bcryptjs')
+const RollCallReport = require('../models/RollCallReport');
 const ClassInfo = require('../models/ClassInfo');
 const stringMessage = require('../value/string');
 const QR = require('../util/QR')
 const router = express.Router()
 const userUtil = require('../util/UserUtils')
+const reportUtil = require('../util/ReportUtils')
+
 
 
 /**
@@ -17,21 +20,42 @@ const userUtil = require('../util/UserUtils')
  */
 
 /**
+ * @typedef ReportConfig
+ * @property {string} checkinLimitTime.required - Thời gian giới hạn điểm danh
+ * @property {boolean} allowLate.required - Cho phép đi trễ
+ */
+
+/**
  * Tạo danh sách điểm danh. Chỉ có tài khoản có quyền Admin hoặc teacher mới thực hiện được chức năng này.
- * @route POST /reports/
+ * @route POST /reports/{id}
  * @group Report
- * @param {string} class_id.body.required - .
- * @returns {ListClasses.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
+ * @param {string} id.path.required - id lớp cần điểm danh
+ * @param {ReportConfig.model} config.body.required - config cho bảng điểm danh
+ * @returns {RollCallReport.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer
  */
- router.post('/', auth.isAdmin, async (req, res) => {
-    // Create a new user
+ router.post('/:id', auth.isAdmin, async (req, res) => {
+    // Create a new report
     try {
-        const classInfo = new ClassInfo(req.body);
-        await classInfo.save();
-        res.status(201).send(ResponseUtil.makeResponse(classInfo));
+        const classInfo = await findClass(req.params.id);
+        let idx = reportUtil.isAbleCreatedReport(classInfo.schedule);
+        if(idx == -1){
+            throw new Error(stringMessage.create_report_time_expired);
+        }
+        let report = {
+            id: reportUtil.genReportId(classInfo.id, classInfo.schedule[idx]),
+            ...req.body,
+            subject: classInfo.id,
+            content: classInfo.students.map(student => ({
+                user: student,
+                status: 'absent'
+            })),
+            expired: classInfo.shift === '0' ? '11:30' : '4:30',
+        }
+        await report.save();
+        res.status(201).send(ResponseUtil.makeResponse(report));
     } catch (error) {
         console.log(error);
         if(error.code == 11000){
@@ -89,5 +113,10 @@ const userUtil = require('../util/UserUtils')
         res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })
+
+async function findClass(classId){
+    const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors').populate('teacher');
+    return classInfo;
+}
 
 module.exports = router;

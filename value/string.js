@@ -11,6 +11,7 @@ module.exports = {
     class_change_timeup: "Đã hết thời gian cập nhật thông tin lớp!",
     class_change_timeup: "Đã hết thời gian cập nhật thông tin lớp!",
     change_time_expired: "Đã hết thời gian chỉnh sửa thông tin lớp!",
+    create_report_time_expired: "Đây không phải thời gian tạo bảng điểm danh!",
     //user validate
     id_required: "ID không được để trống!",
     name_required: "Tên không được để trống!",
