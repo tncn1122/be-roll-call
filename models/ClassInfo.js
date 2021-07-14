@@ -109,6 +109,53 @@ const classInfoSchema = mongoose.Schema({
     },
 })
 
+classInfoSchema.pre('remove', async function (next) {
+    // remove class in user
+    //console.log("start remove pre");
+    const classinfo = await findClass(this.id);
+    await updateUserClass(classinfo.teacher.id, 0, classinfo.id);
+    for (const user of classinfo.monitors){
+        //console.log(user);
+        await updateUserClass(user.id, 0, classinfo.id);
+    }
+    for (const user of classinfo.students){
+        await updateUserClass(user.id, 0, classinfo.id);
+    }
+    //console.log("done remove pre");
+    next()
+})
+
+async function updateUserClass(teacher_id, state, class_id){
+    let current_user = await User.findOne({id: teacher_id});
+    if (state == 1){
+        // add class
+        current_user.classes.push(class_id);
+    }
+    else{
+        // remove class
+        current_user.classes = current_user.classes.filter(item => item !== class_id);
+    }
+    await User.findOneAndUpdate({id: teacher_id}, current_user, function(error, raw){
+        if(!error){
+            if(raw){
+                //console.log(raw);
+                raw.save();
+            }
+            else{
+                throw new Error(stringMessage.user_not_found);
+            }
+        }
+        else{
+            throw new Error(ResponseUtil.makeMessageResponse(error.message))
+        }
+    });
+}
+
+async function findClass(classId){
+    const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors').populate('teacher');
+    return classInfo;
+}
+
 
 
 //

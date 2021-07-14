@@ -315,7 +315,7 @@ router.delete('/:id', auth.isAdmin, async(req, res) => {
         
     }
     catch(err){
-        log(err)
+        console.log(err)
         res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })

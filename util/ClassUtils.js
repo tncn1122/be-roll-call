@@ -18,6 +18,7 @@ function currentDate(){
 function isChangeExpired(startDate){
     const now = moment();
     const startDateMM = moment(startDate, 'DD-MM-YYYY');
+    return 
 }
 
 function createBaseClassInfo(classInfo){

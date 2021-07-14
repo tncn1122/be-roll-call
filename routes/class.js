@@ -104,16 +104,17 @@ const userUtil = require('../util/UserUtils')
         let classId = req.params.id;
         const classInfo = await ClassInfo.findOne({id: classId});
         if (classInfo){
-            await User.deleteOne({id: classId})
-            res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage.deleted_successfully))
+            await classInfo.remove();
+            // await ClassInfo.remove({id: classId})
+            res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage.deleted_successfully));
         }
         else{
-            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.class_not_found))
+            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.class_not_found));
         }
         
     }
     catch(err){
-        res.status(500).send(ResponseUtil.makeMessageResponse(err.message))
+        res.status(500).send(ResponseUtil.makeMessageResponse(err.message));
     }
 })
 
@@ -145,7 +146,7 @@ const userUtil = require('../util/UserUtils')
             if(!error){
                 if(raw){
                     raw.save();
-                    updateStudentAfterChange(classInfo.students, classUpdate.students, class_id);
+                    updateStudentAfterChange(classUpdate.students, classUpdate.students, class_id);
                     res.status(201).send(ResponseUtil.makeResponse(raw));
                 }
                 else{
@@ -159,7 +160,8 @@ const userUtil = require('../util/UserUtils')
         
     }
     catch(err){
-        res.status(500).send(ResponseUtil.makeMessageResponse(err.message))
+        console.log(err);
+        res.status(500).send(ResponseUtil.makeMessageResponse(err.message));
     }
 })
 
@@ -220,11 +222,11 @@ async function updateStudentAfterChange(old_student_list, new_student_list, clas
     const simple_old_students_id = old_student_list.map(item => item.id);
     const simple_new_students_id = new_student_list.map(item => item.id);
     const update_state = new Map();
-    for (id of simple_old_students_id){
+    for (const id of simple_old_students_id){
         update_state.set(id, 0);
     }
 
-    for (id of simple_new_students_id){
+    for (const id of simple_new_students_id){
         if (update_state.has(id)){
             update_state.delete(id);
         }
