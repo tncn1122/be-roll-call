@@ -150,7 +150,7 @@ const userUtil = require('../util/UserUtils')
                 if(raw){
                     raw.save();
                     updateStudentAfterChange(classUpdate.students, classInfo.students, class_id);
-                    res.status(201).send(ResponseUtil.makeResponse(raw));
+                    return res.status(201).send(ResponseUtil.makeResponse(raw));
                 }
                 else{
                     return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.class_not_found));
