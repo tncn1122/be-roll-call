@@ -154,7 +154,7 @@ const userUtil = require('../util/UserUtils')
                 }
             }
             else{
-                res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
+                return res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
             }
         });
         
