@@ -120,19 +120,19 @@ const userUtil = require('../util/UserUtils')
 
 /**
  * Sửa một lớp dựa vào ID, chỉ có Admin mới thực hiện được chức năng này.
- * @route PUT /classes/{id}
+ * @route PUT /classes/
  * @group Class
- * @param {Class.model} class.body.required ID của lớp cần sửa.
+ * @param {string} id.path.required Id của lớp cần sửa.
+ * @param {Class.model} class.body.required Body của lớp cần sửa.
  * @returns {Error.model} 200 - "Xóa thành công!" nếu thao tác thành công.
  * @returns {Error.model} 500 - Lỗi.
  * @security Bearer
  */
- router.put('/:id', auth.isAdmin, async(req, res) => {
+ router.put('/', auth.isAdmin, async(req, res) => {
     try{
         let classUpdate = req.body;
-        let class_id = req.params.id;
-        const classInfo = await ClassInfo.findOne({id: class_id});
-        
+        const classInfo = await findClass(classUpdate.id);
+        let class_id = classInfo.id;
         delete classUpdate['id'];
         if (classInfo.teacher !== classUpdate.teacher){
             // remove class from old teacher
@@ -271,8 +271,8 @@ async function updateStudentClass(student_state_list, class_id){
 }
 
 async function updateTeacherClass(teacher_id, state, class_id){
+    console.log(teacher_id);
     let current_user = await findUser(teacher_id);
-    console.log(current_user)
     if (state == 1){
         // add class
         current_user.classes.push(class_id);
