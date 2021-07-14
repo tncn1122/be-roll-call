@@ -271,7 +271,8 @@ async function updateStudentClass(student_state_list, class_id){
 }
 
 async function updateTeacherClass(teacher_id, state, class_id){
-    let current_user = await User.findOne({id: teacher_id});
+    let current_user = await findUser(teacher_id);
+    console.log(current_user)
     if (state == 1){
         // add class
         current_user.classes.push(class_id);
@@ -294,6 +295,18 @@ async function updateTeacherClass(teacher_id, state, class_id){
         }
     });
 }
+
+async function findUser(userId){
+    let user =  await User.findOne({id: userId});
+    if(user){
+        return user;
+    }
+    else{
+        throw new Error(stringMessage.user_not_found);
+    }
+
+}
+
 
 router.get('/delete/all', async(req, res) => {
     try{
