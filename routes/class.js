@@ -122,7 +122,6 @@ const userUtil = require('../util/UserUtils')
  * Sửa một lớp dựa vào ID, chỉ có Admin mới thực hiện được chức năng này.
  * @route PUT /classes/
  * @group Class
- * @param {string} id.path.required Id của lớp cần sửa.
  * @param {Class.model} class.body.required Body của lớp cần sửa.
  * @returns {Error.model} 200 - "Xóa thành công!" nếu thao tác thành công.
  * @returns {Error.model} 500 - Lỗi.
@@ -134,7 +133,7 @@ const userUtil = require('../util/UserUtils')
         const classInfo = await findClass(classUpdate.id);
         let class_id = classInfo.id;
         delete classUpdate['id'];
-        if (classInfo.teacher !== classUpdate.teacher){
+        if (classInfo.teacher.id !== classUpdate.teacher.id){
             // remove class from old teacher
             await updateTeacherClass(classInfo.teacher.id, 0, classInfo.id);
             // add class to new teacher
@@ -142,15 +141,15 @@ const userUtil = require('../util/UserUtils')
         }
 
         
-        await ClassInfo.findOneAndUpdate({id: classUpdate.id}, classUpdate, {runValidators: true}, function(error, raw){
+        await ClassInfo.findOneAndUpdate({id: class_id}, classUpdate, {runValidators: true}, function(error, raw){
             if(!error){
                 if(raw){
-                    raw.save();
                     updateStudentAfterChange(classUpdate.students, classInfo.students, class_id);
+                    raw.save();
                     res.status(201).send(ResponseUtil.makeResponse(raw));
                 }
                 else{
-                    return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found));
+                    return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.class_not_found));
                 }
             }
             else{
@@ -240,10 +239,10 @@ async function updateStudentAfterChange(old_student_list, new_student_list, clas
 
 async function updateStudentClass(student_state_list, class_id){
     let student_list = [];
-    console.log((student_state_list));
+    //console.log((student_state_list));
     if (student_state_list){
         for (const [key, value] of student_state_list){
-            let current_user = await User.findOne({id: key});
+            let current_user = await findUser(key);
             if (value == 1){
                 // add class
                 current_user.classes.push(class_id);
