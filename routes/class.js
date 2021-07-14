@@ -123,7 +123,7 @@ const userUtil = require('../util/UserUtils')
  * @route PUT /classes/
  * @group Class
  * @param {Class.model} class.body.required Body của lớp cần sửa.
- * @returns {Error.model} 200 - "Xóa thành công!" nếu thao tác thành công.
+ * @returns {Class.model} 200 - Thông tin lớp nếu thao tác thành công.
  * @returns {Error.model} 500 - Lỗi.
  * @security Bearer
  */
@@ -131,6 +131,9 @@ const userUtil = require('../util/UserUtils')
     try{
         let classUpdate = req.body;
         const classInfo = await findClass(classUpdate.id);
+        if(classUtil.isChangeExpired(classInfo.dateStart)){
+            return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.change_time_expired));
+        }
         let class_id = classInfo.id;
         delete classUpdate['id'];
         if (classInfo.teacher.id !== classUpdate.teacher.id){
@@ -157,11 +160,10 @@ const userUtil = require('../util/UserUtils')
                 return res.status(400).send(ResponseUtil.makeMessageResponse(error.message));
             }
         });
-        
     }
     catch(err){
         console.log(err);
-        res.status(500).send(ResponseUtil.makeMessageResponse(err.message));
+        return res.status(500).send(ResponseUtil.makeMessageResponse(err.message));
     }
 })
 
@@ -170,7 +172,7 @@ const userUtil = require('../util/UserUtils')
  * @route GET /classes/{id}
  * @group Class
  * @param {string} id.path.required ID của lớp cần lấy thông tin.
- * @returns {Error.model} 200 - "Xóa thành công!" nếu thao tác thành công.
+ * @returns {Class.model} 200 - Thông tin lớp nếu thao tác thành công.
  * @returns {Error.model} 500 - Lỗi.
  * @security Bearer
  */

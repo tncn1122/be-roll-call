@@ -9,7 +9,8 @@ module.exports = {
     wrong_password: "Mật khẩu đã nhập không đúng!",
     deleted_successfully: "Xóa thành công!",
     class_change_timeup: "Đã hết thời gian cập nhật thông tin lớp!",
-
+    class_change_timeup: "Đã hết thời gian cập nhật thông tin lớp!",
+    change_time_expired: "Đã hết thời gian chỉnh sửa thông tin lớp!",
     //user validate
     id_required: "ID không được để trống!",
     name_required: "Tên không được để trống!",

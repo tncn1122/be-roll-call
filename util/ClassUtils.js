@@ -27,7 +27,7 @@ function currentDate(){
 function isChangeExpired(startDate){
     const now = moment();
     const startDateMM = moment(startDate, 'DD-MM-YYYY');
-    return;
+    return (now.isSameOrAfter(startDateMM));
 }
 
 function genSchedule(startDate, shift, days, dayOfWeek){
@@ -79,5 +79,6 @@ module.exports = {
     createBaseClassInfo,
     createListClass,
     findClass,
-    genSchedule
+    genSchedule,
+    isChangeExpired
 }
