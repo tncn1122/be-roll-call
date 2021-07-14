@@ -145,11 +145,11 @@ const userUtil = require('../util/UserUtils')
 
         classUpdate.teacher = await findUser(classUpdate.teacher.id);
         classUpdate.students = await createStudentList(classUpdate.students);
-        await ClassInfo.findOneAndUpdate({id: class_id}, classUpdate, {runValidators: true}, function(error, raw){
+        await ClassInfo.findOneAndUpdate({id: class_id}, classUpdate, {runValidators: true}, async function(error, raw){
             if(!error){
                 if(raw){
                     raw.save();
-                    updateStudentAfterChange(classUpdate.students, classInfo.students, class_id);
+                    await updateStudentAfterChange(classUpdate.students, classInfo.students, class_id);
                     return res.status(201).send(ResponseUtil.makeResponse(raw));
                 }
                 else{
