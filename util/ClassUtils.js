@@ -32,7 +32,8 @@ function isChangeExpired(startDate){
 
 function genSchedule(startDate, shift, days, dayOfWeek){
     let schedule = [];
-    let day = moment(startDate);
+    //console.log(startDate);
+    let day = moment(startDate, 'DD-MM-YYYY');
     while(day.format('dddd') !== week[dayOfWeek]){
         day.add(1, 'days');
     }
