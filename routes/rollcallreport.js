@@ -92,7 +92,7 @@ const excel = require('excel4node');
  router.get('/:class_id', auth.isReporter, async (req, res) => {
     // Create a new report
     try {
-        const report = await RollCallReport.findOne({subject: req.params.class_id}).populate({ 
+        const report = await RollCallReport.find({subject: req.params.class_id}).populate({ 
             path: 'content',
             populate: {
               path: 'user',
@@ -154,6 +154,33 @@ const excel = require('excel4node');
         res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })
+
+/**
+ * Lấy dữ liệu điểm danh.
+ * @route GET /reports/{id}/status
+ * @group Report
+ * @param {string} id.path.required - id report
+ * @returns {RollCallReport.model} 200 - Report
+ * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
+ * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
+ * @security Bearer
+ */
+ router.get('/:id/status', auth.isUser ,async (req, res) => {
+    // Create a new report
+    try {
+        let report = await findReportById(req.params.id);
+        if(report){
+            return res.status(201).send(ResponseUtil.makeResponse(report));
+        }
+        else{
+            return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.report_not_found));
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
+    }
+})
+
 
 
 
@@ -285,6 +312,7 @@ async function findReportById(reportId){
 }
 
 async function genExcelReport(reportId){
+    let report = await findReportById(reportId);
     //console.log(report.content[0].user);
     let classInfo = await findClassInfo(report.subject);
     let workbook = new excel.Workbook();
