@@ -21,4 +21,9 @@ module.exports = {
     role_wrong: "Quyền không đúng cú pháp!",
     date_wrong: "Ngày không hợp lệ!",
     
+
+    ontime: "Có mặt",
+    late: "Trễ",
+    absent: "Vắng",
+
 };

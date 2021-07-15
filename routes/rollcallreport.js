@@ -114,7 +114,13 @@ async function findClassInfo(classId){
 }
 
 async function findReportById(reportId){
-    const report = await RollCallReport.findOne({id: reportId}).populate('content');
+    const report = await RollCallReport.findOne({id: reportId}).populate({ 
+        path: 'content',
+        populate: {
+          path: 'user',
+          model: 'User'
+        } 
+     });
     if(!report){
         throw new Error(stringMessage.report_not_found);
     }
@@ -123,7 +129,7 @@ async function findReportById(reportId){
 
 async function genExcelReport(reportId){
     let report = await findReportById(reportId);
-    console.log(report.subject);
+    //console.log(report.content[0].user);
     let classInfo = await findClassInfo(report.subject);
     let workbook = new excel.Workbook();
     let reportSheet = workbook.addWorksheet(report.date);
@@ -132,18 +138,20 @@ async function genExcelReport(reportId){
     let subject = "Môn: " + classInfo.name;
     let teacher = "Giảng viên: " + classInfo.teacher.name;
     let shift = report.shift == 0 ? 'Sáng' : 'Chiều';
-    let date = "Buổi: " + shift + "- Ngày: " + report.date;
+    let date = "Buổi: " + shift + " - Ngày: " + report.date;
 
     let titleStyle = workbook.createStyle({
         font: {
           color: '#FF0800',
+          name: 'Arial',
           size: 15
         },
       });
 
-    let rowStyle = workbook.createStyle({
+    let rowTitleStyle = workbook.createStyle({
         font: {
           color: '#000000',
+          name: 'Arial',
           size: 12
         },
         fill: {
@@ -173,23 +181,88 @@ async function genExcelReport(reportId){
           },
       });
 
+    let rowStyle = workbook.createStyle({
+        font: {
+          color: '#000000',
+          name: 'Arial',
+          size: 12
+        },
+        border: {
+            left: {
+                style: 'thin',
+                color: 'black',
+            },
+            right: {
+                style: 'thin',
+                color: 'black',
+            },
+            top: {
+                style: 'thin',
+                color: 'black',
+            },
+            bottom: {
+                style: 'thin',
+                color: 'black',
+            },
+            outline: false,
+          },
+      });
+
       reportSheet.cell(1, 1, 1, 5, true).string(title).style(titleStyle);
       reportSheet.cell(2, 1, 2, 5, true).string(subject).style(titleStyle);
       reportSheet.cell(3, 1, 3, 5, true).string(teacher).style(titleStyle);
       reportSheet.cell(4, 1, 4, 5, true).string(date).style(titleStyle);
       
-      reportSheet.cell(5, 1).string('STT').style(rowStyle);
-      reportSheet.cell(5, 2).string('MSSV').style(rowStyle);
-      reportSheet.cell(5, 3).string('TÊN').style(rowStyle);
-      reportSheet.cell(5, 4).string(report.date).style(rowStyle);
+      reportSheet.cell(5, 1).string('STT').style(rowTitleStyle);
+      reportSheet.cell(5, 2).string('MSSV').style(rowTitleStyle);
+      reportSheet.cell(5, 3).string('TÊN').style(rowTitleStyle);
+      reportSheet.cell(5, 4).string(report.date).style(rowTitleStyle);
 
+      let curCell = 6;
+      let total = 0;
+      let total_late = 0;
+      let total_absent = 0;
+      let total_ontime = 0;
+      for(const item of report.content){
+        //console.log(item.user);
+        reportSheet.cell(curCell, 1).number(++total).style(rowStyle);
+        reportSheet.cell(curCell, 2).string(item.user.id).style(rowStyle);
+        reportSheet.cell(curCell, 3).string(item.user.name).style(rowStyle);
 
+        switch(item.status){
+            case 'ontime':{
+                reportSheet.cell(curCell, 4).string(stringMessage.ontime).style(rowStyle);
+                total_ontime++;
+                break;
+            }
+            case 'late':{
+                reportSheet.cell(curCell, 4).string(stringMessage.late).style(rowStyle);
+                total_late++;
+                break;
+            }  
+            case 'absent':{
+                reportSheet.cell(curCell, 4).string(stringMessage.absent).style(rowStyle);
+                total_absent++;
+                break;
+            }
+        }
+        curCell++;
+      }
+      reportSheet.column(2).setWidth(15);
+      reportSheet.column(3).setWidth(30);
+      curCell += 2;
+      reportSheet.cell(curCell, 1).string("Tổng số").style(rowTitleStyle);
+      reportSheet.cell(curCell++, 2).number(total).style(rowTitleStyle);
+      reportSheet.cell(curCell, 1).string("Đúng giờ:").style(rowStyle);
+      reportSheet.cell(curCell++, 2).number(total_ontime).style(rowStyle);
+      reportSheet.cell(curCell, 1).string("Trễ:").style(rowStyle);
+      reportSheet.cell(curCell++, 2).number(total_late).style(rowStyle);
+      reportSheet.cell(curCell, 1).string("Vắng:").style(rowStyle);
+      reportSheet.cell(curCell++, 2).number(total_absent).style(rowStyle);
       return workbook;
 }
 
-function createReportArray(report){
-    reportArray
-}
+
 
 
 module.exports = router;
