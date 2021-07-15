@@ -87,8 +87,6 @@ const router = express.Router()
                 return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.not_auth));
             }
 
-            
-
             res.status(200).send(ResponseUtil.makeResponse(await createClassList(userResponse.classes)));
         }
     } catch (error) {
@@ -103,16 +101,45 @@ async function createClassList(class_id_list){
 
     if (class_id_list){
         for (const class_id of class_id_list){
-            let classInfo = findClass(class_id);
+            let classInfo = await findClass(class_id);
+            console.log(class_id);
+            console.log(classInfo);
             if(classInfo){
                 class_list.push(classInfo);
             }
             else{
-                throw new Error(stringMessage.class_not_found + " Môn học: " + class_id.id);
+                //throw new Error(stringMessage.class_not_found + " Mã: " + class_id);
+                
             }  
         }
     }
     return Promise.all(class_list);
+}
+
+async function updateUserClass(teacher_id, state, class_id){
+    let current_user = await User.findOne({id: teacher_id});
+    if (state == 1){
+        // add class
+        current_user.classes.push(class_id);
+    }
+    else{
+        // remove class
+        current_user.classes = current_user.classes.filter(item => item !== class_id);
+    }
+    await User.findOneAndUpdate({id: teacher_id}, current_user, function(error, raw){
+        if(!error){
+            if(raw){
+                //console.log(raw);
+                raw.save();
+            }
+            else{
+                throw new Error(stringMessage.user_not_found);
+            }
+        }
+        else{
+            throw new Error(ResponseUtil.makeMessageResponse(error.message))
+        }
+    });
 }
 
 async function findClass(classId){

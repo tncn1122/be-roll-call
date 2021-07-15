@@ -21,6 +21,7 @@ module.exports = {
     role_required: "Quyền không được để trống!",
     role_wrong: "Quyền không đúng cú pháp!",
     date_wrong: "Ngày không hợp lệ!",
+    id_form: "Chỉ bao gồm chữ cái, chữ số và dấu gạch ngang!",
     
 
     ontime: "Có mặt",
