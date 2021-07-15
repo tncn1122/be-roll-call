@@ -362,10 +362,10 @@ async function genExcelReport(reportId){
 async function genExcelReportAll(classId){
     let report = await findAllReportBySubject(classId)
     //console.log(report.content[0].user);
-    let classInfo = await findClassInfo(classId);
+    let classInfo = await findClass(classId);
     console.log(classInfo);
     let workbook = new excel.Workbook();
-    let reportSheet = workbook.addWorksheet(classInfo.name);
+    let reportSheet = workbook.addWorksheet(classInfo.id);
 
 
     let title = "Báo Cáo Điểm Danh";
