@@ -44,6 +44,25 @@ function isAbleCreatedReport(dateList){
     
 }
 
+function getStatusCheckin(reportInfo){
+    const now = moment();
+    const limitTime = moment(reportInfo.checkinLimitTime, "hh:mm");
+    const expiredTime = moment(reportInfo.expired, "hh:mm");
+    if(!reportInfo.allowLate){
+        expiredtime = limitTime;
+    }
+    if(now.isBefore(limitTime)){
+        return "ontime";
+    }
+    else if (now.isBefore(expiredTime)){
+        return "late";
+    }
+    else{
+        return "absent";
+    }
+
+}
+
 
 
 
@@ -51,5 +70,6 @@ module.exports = {
     isAbleCreatedReport,
     genReportId,
     getDate,
+    getStatusCheckin,
 
 }

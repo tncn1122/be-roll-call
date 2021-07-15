@@ -39,6 +39,8 @@ function isChangeExpired(startDate){
     return (now.isSameOrAfter(startDateMM));
 }
 
+
+
 function genSchedule(startDate, shift, days, dayOfWeek){
     let schedule = [];
     //console.log(startDate);
@@ -90,5 +92,5 @@ module.exports = {
     findClass,
     genSchedule,
     isChangeExpired,
-    validateDate
+    validateDate,
 }

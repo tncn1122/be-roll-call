@@ -2,6 +2,7 @@ const { integer } = require('mongodb');
 const mongoose = require('mongoose');
 const User = require('./User');
 const reportUtil = require('../util/ReportUtils');
+const classtUtil = require('../util/ClassUtils');
 const QR = require('../util/QR');
 
 /**
@@ -75,6 +76,7 @@ reportschema.pre('save', async function(next){
     const report = this;
     report.qrUrl = QR.createQR(report.id);
     report.date = reportUtil.getDate();
+    classtUtil.validateDate(report.checkinLimitTime);
     next();
 })
 

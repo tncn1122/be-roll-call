@@ -56,7 +56,7 @@ const excel = require('excel4node');
                 user: student,
                 status: 'absent'
             })),
-            expired: classInfo.shift === '0' ? '11:30' : '4:30',
+            expired: classInfo.shift === '0' ? '11:30' : '16:30',
             shift: classInfo.shift
         }
         const newReport = new RollCallReport(report);
@@ -81,20 +81,56 @@ const excel = require('excel4node');
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer
  */
- router.get('/:id/download', async (req, res) => {
+ router.get('/:id/download', auth.isUser ,async (req, res) => {
     // Create a new report
     try {
         let reportFile = await genExcelReport(req.params.id);
         reportFile.write('Report.xlsx', res);
     } catch (error) {
         console.log(error);
-        if(error.code == 11000){
-            return res.status(400).send(ResponseUtil.makeMessageResponse(ErrorUtil.makeErrorValidateMessage(JSON.stringify(error.keyValue))));
-        }
         res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })
 
+
+
+/**
+ * Điểm danh. Chỉ có tài khoản sinh viên mới thực hiện được chức năng này.
+ * @route POST /reports/{id}/checkin
+ * @group Report
+ * @param {string} id.path.required - id bảng điểm danh
+ * @returns {Error.model} 200 - trạng thái điểm danh: ontime, late hoặc absent.
+ * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
+ * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
+ * @security Bearer
+ */
+ router.post('/:id/checkin', auth.isStudent ,async (req, res) => {
+    // Create a new report
+    try {
+        let student = req.user;
+        let report = await findReportById(req.params.id);
+        console.log(report);
+        let status = reportUtil.getStatusCheckin(report);
+        let check = 0;
+        for(const item of report.content){
+            if (item.user && item.user.id === student.id){
+                item.status = status;
+                check = 1;
+            }
+        }
+        if(check){
+            await report.save();
+            //console.log(ResponseUtil.makeMessageResponse(stringMessage[status]));
+            return res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage[status]));
+        }
+        return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.student_not_in_class));
+        
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
+    }
+})
 
 async function findClass(classId){
     const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors').populate('teacher');
@@ -225,6 +261,9 @@ async function genExcelReport(reportId){
       let total_ontime = 0;
       for(const item of report.content){
         //console.log(item.user);
+        if(item.user === null){
+            continue;
+        }
         reportSheet.cell(curCell, 1).number(++total).style(rowStyle);
         reportSheet.cell(curCell, 2).string(item.user.id).style(rowStyle);
         reportSheet.cell(curCell, 3).string(item.user.name).style(rowStyle);
