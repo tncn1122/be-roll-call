@@ -12,6 +12,7 @@
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
+    "excel4node": "^1.7.2",
     "express": "~4.16.1",
     "express-swagger-generator": "^1.1.17",
     "express-validator": "^6.10.1",

@@ -11,7 +11,7 @@ def create_account(filename):
     wb = xlrd.open_workbook(loc)
     sheet = wb.sheet_by_index(0)
 
-    for index in range (2, sheet.nrows):
+    for index in range (3, sheet.nrows):
         student_id = sheet.cell(index, 1).value
         name = sheet.cell(index, 2).value + " " + sheet.cell(index, 3).value
         email = sheet.cell(index, 7).value

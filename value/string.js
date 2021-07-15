@@ -11,12 +11,14 @@ module.exports = {
     class_change_timeup: "Đã hết thời gian cập nhật thông tin lớp!",
     create_report_time_expired: "Đây không phải thời gian tạo bảng điểm danh!",
     report_exist: "Đã tồn tại bảng điểm danh cho buổi này!",
+    report_not_found: "Không tìm thấy bảng điểm danh!",
     //user validate
     id_required: "ID không được để trống!",
     name_required: "Tên không được để trống!",
     email_required: "Email không được để trống!",
     password_required: "Mật khẩu không được để trống!",
     role_required: "Quyền không được để trống!",
-    role_wrong: "Quyền không đúng cú pháp!"
+    role_wrong: "Quyền không đúng cú pháp!",
+    date_wrong: "Ngày không hợp lệ!",
     
 };

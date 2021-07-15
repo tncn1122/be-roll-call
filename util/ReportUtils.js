@@ -1,6 +1,8 @@
 const stringMessage = require('../value/string')
 const RollCallReport = require('../models/RollCallReport');
-const moment = require('moment') 
+const ClassInfo = require('../models/ClassInfo');
+const moment = require('moment');
+
 
 
 function getDate(){
@@ -42,8 +44,12 @@ function isAbleCreatedReport(dateList){
     
 }
 
+
+
+
 module.exports = {
     isAbleCreatedReport,
     genReportId,
     getDate,
+
 }

@@ -16,6 +16,15 @@ async function findClass(classId){
     return classInfo;
 }
 
+function validateDate(date){
+    try{
+        moment(date, 'DD-MM-YYYY');
+    }
+    catch(err){
+        throw new Error(stringMessage.date_wrong);
+    }
+}
+
 function formatDate(date, stringDate = "DD-MM-YYYY"){
     return moment(date).format(stringDate);
 }
@@ -80,5 +89,6 @@ module.exports = {
     createListClass,
     findClass,
     genSchedule,
-    isChangeExpired
+    isChangeExpired,
+    validateDate
 }

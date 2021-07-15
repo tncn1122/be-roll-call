@@ -10,6 +10,7 @@ const QR = require('../util/QR')
 const router = express.Router()
 const userUtil = require('../util/UserUtils')
 const reportUtil = require('../util/ReportUtils')
+const excel = require('excel4node');
 
 
 
@@ -27,19 +28,19 @@ const reportUtil = require('../util/ReportUtils')
 
 /**
  * Tạo danh sách điểm danh. Chỉ có tài khoản có quyền Admin hoặc teacher mới thực hiện được chức năng này.
- * @route POST /reports/{id}
+ * @route POST /reports/{class_id}
  * @group Report
- * @param {string} id.path.required - id lớp cần điểm danh
+ * @param {string} class_id.path.required - id lớp cần điểm danh
  * @param {ReportConfig.model} config.body.required - config cho bảng điểm danh
  * @returns {RollCallReport.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer
  */
- router.post('/:id', auth.isAdmin, async (req, res) => {
+ router.post('/:class_id', auth.isReporter, async (req, res) => {
     // Create a new report
     try {
-        const classInfo = await findClass(req.params.id);
+        const classInfo = await findClass(req.params.class_id);
         let idx = reportUtil.isAbleCreatedReport(classInfo.schedule);
         if(idx == -1){
             throw new Error(stringMessage.create_report_time_expired);
@@ -71,53 +72,29 @@ const reportUtil = require('../util/ReportUtils')
 })
 
 /**
- * Get tất cả lớp hiện có. Chỉ có tài khoản quyền Admin mới thực hiện được chức năng này.
- * @route GET /classes/
- * @group Class
- * @returns {ListClasses.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
- * @returns {Error.model} 500 - Lỗi.
+ * Tải về danh sách điểm danh. Chỉ có tài khoản đăng nhập mới thực hiện được chức năng này.
+ * @route GET /reports/{id}/download
+ * @group Report
+ * @param {string} id.path.required - id bảng điểm danh
+ * @returns {Error.model} 200 - File excel chứa report.
+ * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
+ * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer
  */
- router.get('/', auth.isAdmin, async(req, res) => {
-    ClassInfo.find({}, function(err, classes){
-        //console.log(users);
-        if(err){
-            res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
+ router.get('/:id/download', async (req, res) => {
+    // Create a new report
+    try {
+        let reportFile = await genExcelReport(req.params.id);
+        reportFile.write('Report.xlsx', res);
+    } catch (error) {
+        console.log(error);
+        if(error.code == 11000){
+            return res.status(400).send(ResponseUtil.makeMessageResponse(ErrorUtil.makeErrorValidateMessage(JSON.stringify(error.keyValue))));
         }
-        else{
-            console.log((classes));
-            res.status(200).send(ResponseUtil.makeResponse(classes))
-        }
-    });
+        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
+    }
 })
 
-/**
- * Xóa một lớp khỏi hệ thống dựa vào ID, chỉ có Admin mới thực hiện được chức năng này.
- * @route DELETE /classes/{id}
- * @group Class
- * @param {string} id.path.required ID của lớp cần xóa.
- * @returns {Error.model} 200 - "Xóa thành công!" nếu thao tác thành công.
- * @returns {Error.model} 500 - Lỗi.
- * @security Bearer
- */
- router.delete('/:id', auth.isAdmin, async(req, res) => {
-    try{
-        let classId = req.params.id;
-        const classInfo = ClassInfo.findOne({id: classId});
-        if (classInfo){
-            await User.deleteOne({id: classId})
-            res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage.deleted_successfully))
-        }
-        else{
-            res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.user_not_found))
-        }
-        
-    }
-    catch(err){
-        log(err)
-        res.status(500).send(ResponseUtil.makeMessageResponse(error.message))
-    }
-})
 
 async function findClass(classId){
     const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors').populate('teacher');
@@ -127,5 +104,92 @@ async function findReport(date, shift){
     const report = await RollCallReport.findOne({date: date, shift: shift }).populate('content');
     return report;
 }
+
+async function findClassInfo(classId){
+    const classInfo = await ClassInfo.findOne({id: classId }).populate('teacher');
+    if(!classInfo){
+        throw new Error(stringMessage.class_not_found);
+    }
+    return classInfo;
+}
+
+async function findReportById(reportId){
+    const report = await RollCallReport.findOne({id: reportId}).populate('content');
+    if(!report){
+        throw new Error(stringMessage.report_not_found);
+    }
+    return report;
+}
+
+async function genExcelReport(reportId){
+    let report = await findReportById(reportId);
+    console.log(report.subject);
+    let classInfo = await findClassInfo(report.subject);
+    let workbook = new excel.Workbook();
+    let reportSheet = workbook.addWorksheet(report.date);
+
+    let title = "Báo Cáo Điểm Danh";
+    let subject = "Môn: " + classInfo.name;
+    let teacher = "Giảng viên: " + classInfo.teacher.name;
+    let shift = report.shift == 0 ? 'Sáng' : 'Chiều';
+    let date = "Buổi: " + shift + "- Ngày: " + report.date;
+
+    let titleStyle = workbook.createStyle({
+        font: {
+          color: '#FF0800',
+          size: 15
+        },
+      });
+
+    let rowStyle = workbook.createStyle({
+        font: {
+          color: '#000000',
+          size: 12
+        },
+        fill: {
+            type: 'pattern',
+            patternType: 'solid',
+            bgColor: '#CCECFF',
+            fgColor: '#CCECFF',
+          },
+        border: {
+            left: {
+                style: 'thin',
+                color: 'black',
+            },
+            right: {
+                style: 'thin',
+                color: 'black',
+            },
+            top: {
+                style: 'thin',
+                color: 'black',
+            },
+            bottom: {
+                style: 'thin',
+                color: 'black',
+            },
+            outline: false,
+          },
+      });
+
+      reportSheet.cell(1, 1, 1, 5, true).string(title).style(titleStyle);
+      reportSheet.cell(2, 1, 2, 5, true).string(subject).style(titleStyle);
+      reportSheet.cell(3, 1, 3, 5, true).string(teacher).style(titleStyle);
+      reportSheet.cell(4, 1, 4, 5, true).string(date).style(titleStyle);
+      
+      reportSheet.cell(5, 1).string('STT').style(rowStyle);
+      reportSheet.cell(5, 2).string('MSSV').style(rowStyle);
+      reportSheet.cell(5, 3).string('TÊN').style(rowStyle);
+      reportSheet.cell(5, 4).string(report.date).style(rowStyle);
+
+
+      return workbook;
+}
+
+function createReportArray(report){
+    reportArray
+}
+
 
 module.exports = router;
