@@ -49,7 +49,7 @@ function genSchedule(startDate, shift, days, dayOfWeek){
         day.add(1, 'days');
     }
     for (let times = 0; times < days; times++){
-        schedule.push(shift + '/' + formatDate(day));
+        schedule.push(shift + '@' + formatDate(day));
         day.add(7, 'days');
     }
     return schedule;

@@ -31,9 +31,9 @@ function genReportId(class_id, scheduleId){
 
 function isAbleCreatedReport(dateList){
     if(dateList.length > 0){
-        const shift = dateList[0].split('/')[0];
+        const shift = dateList[0].split('@')[0];
         const now = moment();
-        const nowMM = shift + '/' + formatDate(moment(now, 'DD-MM-YYYY'));
+        const nowMM = shift + '@' + formatDate(moment(now, 'DD-MM-YYYY'));
         console.log(nowMM);
         console.log(dateList);
         return dateList.indexOf(nowMM);

@@ -170,7 +170,7 @@ const excel = require('excel4node');
     try {
         let report = await findReportById(req.params.id);
         if(report){
-            return res.status(201).send(ResponseUtil.makeResponse(report));
+            return res.status(200).send(ResponseUtil.makeResponse(report));
         }
         else{
             return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.report_not_found));
@@ -400,7 +400,7 @@ async function genExcelReportAll(classId){
     let subject = "Môn: " + classInfo.name;
     let teacher = "Giảng viên: " + classInfo.teacher.name;
     let shift = report.shift == 0 ? 'Sáng' : 'Chiều';
-    let date = "Buổi: " + shift + " - Ngày bắt đầu: " + (classInfo.schedule[0].split('/')[1]);
+    let date = "Buổi: " + shift + " - Ngày bắt đầu: " + (classInfo.schedule[0].split('@')[1]);
 
     let titleStyle = workbook.createStyle(styleWorkbook.titleStyle);
 
@@ -434,7 +434,7 @@ async function genExcelReportAll(classId){
     let reportCol = 4;
     for(const date of classInfo.schedule){
         //console.log(item.user);
-        let dateInfo = date.split('/');
+        let dateInfo = date.split('@');
         let report = await findReport(dateInfo[1], classInfo.id, dateInfo[0]);
         reportSheet.cell(5, reportCol).string(dateInfo[1]).style(rowTitleStyle);
         if (report){
