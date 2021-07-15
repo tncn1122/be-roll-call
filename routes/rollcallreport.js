@@ -160,12 +160,12 @@ const excel = require('excel4node');
  * @route GET /reports/{id}/status
  * @group Report
  * @param {string} id.path.required - id report
- * @returns {RollCallReport.model} 200 - Report
+ * @returns {ListReports.model} 200 - Report
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer
  */
- router.get('/:id/status', auth.isUser ,async (req, res) => {
+ router.get('/:id/status' ,async (req, res) => {
     // Create a new report
     try {
         let report = await findReportById(req.params.id);
