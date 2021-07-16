@@ -53,10 +53,11 @@ const excel = require('excel4node');
         if(idx == -1){
             throw new Error(stringMessage.create_report_time_expired);
         }
-        if(await findReport(reportUtil.getDate(), classInfo.id, classInfo.shift)){
-            return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.report_exist))
+        let report = await findReport(reportUtil.getDate(), classInfo.id, classInfo.shift)
+        if(report){
+            return res.status(200).send(ResponseUtil.makeResponse(report));
         }
-        let report = {
+        report = {
             id: reportUtil.genReportId(classInfo.id, classInfo.schedule[idx]),
             ...req.body,
             subject: classInfo.id,
