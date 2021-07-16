@@ -1,6 +1,6 @@
 const stringMessage = require('../value/string')
 const ClassInfo = require('../models/ClassInfo');
-const moment = require('moment') 
+const moment = require('moment-timezone') 
 
 
 const week = {
