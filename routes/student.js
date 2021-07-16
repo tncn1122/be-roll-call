@@ -115,8 +115,7 @@ async function createClassList(class_id_list){
 }
 
 async function findClass(classId){
-    const classInfo = await ClassInfo.findOne({id: classId });
+    const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors').populate('teacher');
     return classInfo;
 }
-
 module.exports = router;
