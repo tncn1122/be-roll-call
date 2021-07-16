@@ -194,7 +194,7 @@ const userUtil = require('../util/UserUtils')
     }
 })
 
-async function findUser(userId){
+async function findStudent(userId){
     return await User.findOne({id: userId});
 }
 
@@ -203,7 +203,7 @@ async function createStudentList(student_id_list){
 
     if (student_id_list){
         for (const student_id of student_id_list){
-            let student = findUser(student_id.id);
+            let student = findStudent(student_id.id);
             if(student){
                 student_list.push(student);
             }

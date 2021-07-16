@@ -140,6 +140,7 @@ const excel = require('excel4node');
         });
 
         if(report){
+            console.log(report);
             return res.status(200).send(ResponseUtil.makeResponse(report));
         }
         else{
