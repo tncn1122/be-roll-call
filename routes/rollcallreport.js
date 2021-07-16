@@ -457,7 +457,7 @@ async function genExcelReportAll(classId){
     let title = "Báo Cáo Điểm Danh";
     let subject = "Môn: " + classInfo.name;
     let teacher = "Giảng viên: " + classInfo.teacher.name;
-    let shift = report.shift == 0 ? 'Sáng' : 'Chiều';
+    let shift = classInfo.shift == 0 ? 'Sáng' : 'Chiều';
     let date = "Buổi: " + shift + " - Ngày bắt đầu: " + (classInfo.schedule[0].split('@')[1]);
 
     let titleStyle = workbook.createStyle(styleWorkbook.titleStyle);
