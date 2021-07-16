@@ -14,6 +14,8 @@ const QR = require('../util/QR');
 /**
  * @typedef RollCallReport
  * @property {string} id.required
+ * @property {string} subjectName.required
+ * @property {string} teacherName.required
  * @property {string} subject_id.required
  * @property {Array.<UserReport>} user.required
  * @property {string} qrUrl.required
@@ -57,6 +59,12 @@ const reportschema = mongoose.Schema({
         type: String
     },
     shift:{
+        type: String
+    },
+    subjectName:{
+        type: String
+    },
+    teacherName:{
         type: String
     },
     expired: {

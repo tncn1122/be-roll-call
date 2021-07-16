@@ -60,6 +60,8 @@ const excel = require('excel4node');
             id: reportUtil.genReportId(classInfo.id, classInfo.schedule[idx]),
             ...req.body,
             subject: classInfo.id,
+            subjectName: classInfo.name,
+            teacher: classInfo.teacher,
             content: classInfo.students.map(student => ({
                 user: student,
                 status: 'absent'
@@ -247,6 +249,9 @@ const excel = require('excel4node');
         let check = 0;
         for(const item of report.content){
             if (item.user && item.user.id === student.id){
+                if(item.status !== 'absent'){
+                    return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.student_checked));
+                }
                 item.status = status;
                 check = 1;
             }
@@ -289,6 +294,9 @@ const excel = require('excel4node');
         let check = 0;
         for(const item of report.content){
             if (item.user && item.user.id === student.id){
+                if(item.status !== 'absent'){
+                    return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.student_checked));
+                }
                 item.status = status;
                 check = 1;
             }
