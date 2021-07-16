@@ -46,7 +46,7 @@ const excel = require('excel4node');
     // Create a new report
     try {
         const classInfo = await findClass(req.params.class_id);
-        if(req.user.id !== classInfo.teacher.id){
+        if(req.user.id !== classInfo.teacher.id && req.user.role !== 'admin'){
             throw new Error(stringMessage.not_auth);
         }
         let idx = reportUtil.isAbleCreatedReport(classInfo.schedule);

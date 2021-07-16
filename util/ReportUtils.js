@@ -6,7 +6,7 @@ const moment = require('moment');
 
 
 function getDate(){
-    moment.tz.setDefault("Asia/Ho_Chi_Minh");
+    moment().tz().setDefault("Asia/Ho_Chi_Minh");
     const now = moment();
     return formatDate(now);
 }
@@ -33,7 +33,6 @@ function genReportId(class_id, scheduleId){
 function isAbleCreatedReport(dateList){
     if(dateList.length > 0){
         const shift = dateList[0].split('@')[0];
-        moment.tz.setDefault("Asia/Ho_Chi_Minh");
         const now = moment();
         const nowMM = shift + '@' + formatDate(moment(now, 'DD-MM-YYYY'));
         console.log(nowMM);
@@ -47,7 +46,7 @@ function isAbleCreatedReport(dateList){
 }
 
 function getStatusCheckin(reportInfo){
-    moment.tz.setDefault("Asia/Ho_Chi_Minh");
+    moment().tz().setDefault("Asia/Ho_Chi_Minh");
     const now = moment();
     const limitTime = moment(reportInfo.checkinLimitTime, "hh:mm");
     const expiredTime = moment(reportInfo.expired, "hh:mm");
