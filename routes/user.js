@@ -257,8 +257,8 @@ router.post('/logout', auth.isUser, async(req, res) => {
     //Login a registered user
     try {
         req.user.token = "";
-        await req.user.save()
-        res.status(200).send(ResponseUtil.makeSuccessMessageResponse())
+        await req.user.save();
+        res.status(200).send(ResponseUtil.makeMessageResponse());
     } catch (error) {
         //console.log(error);
         //TODO

@@ -16,7 +16,7 @@ function makeResponse(data = []){
     }
 }
 
-function makeMessageResponse(message = "success"){
+function makeMessageResponse(message = "Success"){
     return {
         message: message
     }

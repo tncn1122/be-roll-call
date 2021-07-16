@@ -270,7 +270,7 @@ const excel = require('excel4node');
  * @route POST /reports/{id}/teachercheckin
  * @group Report
  * @param {string} id.path.required - id bảng điểm danh
- * @param {TeacherCheckin.model} studentId.path.required - Id của student cần điểm danh
+ * @param {TeacherCheckin.model} studentId.body.required - Id của student cần điểm danh
  * @returns {Error.model} 200 - trạng thái điểm danh: ontime, late hoặc absent.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
