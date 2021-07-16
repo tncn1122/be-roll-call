@@ -13,7 +13,7 @@ module.exports = {
     report_exist: "Đã tồn tại bảng điểm danh cho buổi này!",
     report_not_found: "Không tìm thấy bảng điểm danh!",
     student_not_in_class: "Bạn hiện không có trong danh sách điểm danh!",
-    //user validate
+    //validate
     id_required: "ID không được để trống!",
     name_required: "Tên không được để trống!",
     email_required: "Email không được để trống!",

@@ -114,6 +114,66 @@ const excel = require('excel4node');
 })
 
 /**
+ * Lấy dữ liệu điểm danh của lớp theo ngày.
+ * @route GET /reports/{class_id}/{date}/status
+ * @group Report
+ * @param {string} id.path.required - id của lớp
+ * @param {string} date.path.required - ngày, format dd:mm:yyyy
+ * @returns {ListReports.model} 200 - Report
+ * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
+ * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
+ * @security Bearer
+ */
+ router.get('/:class_id/:date/status' ,async (req, res) => {
+    // Create a new report
+    try {
+
+        let report = await RollCallReport.findOne({subject: req.params.class_id, date: req.params.date}).populate({ 
+            path: 'content',
+            populate: {
+              path: 'user',
+              model: 'User'
+            } 
+        });
+
+        if(report){
+            return res.status(200).send(ResponseUtil.makeResponse(report));
+        }
+        else{
+            return res.status(404).send(ResponseUtil.makeMessageResponse(stringMessage.report_not_found));
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
+    }
+})
+
+
+
+/**
+ * Tải về tổng hợp danh sách điểm danh của một môn. Chỉ có tài khoản đăng nhập mới thực hiện được chức năng này.
+ * @route GET /reports/{class_id}/download-all
+ * @group Report
+ * @param {string} class_id.path.required - id môn học
+ * @returns {Error.model} 200 - File excel chứa report.
+ * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
+ * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
+ * @security Bearer
+ */
+ router.get('/:class_id/download-all', auth.isUser ,async (req, res) => {
+    // Create a new report
+    try {
+        console.log(req.params.class_id);
+        let reportFile = await genExcelReportAll(req.params.class_id);
+        reportFile.write('Report.xlsx', res);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
+    }
+})
+
+
+/**
  * Tải về danh sách điểm danh. Chỉ có tài khoản đăng nhập mới thực hiện được chức năng này.
  * @route GET /reports/{id}/download
  * @group Report
@@ -134,26 +194,6 @@ const excel = require('excel4node');
     }
 })
 
-/**
- * Tải về tổng hợp danh sách điểm danh của một môn. Chỉ có tài khoản đăng nhập mới thực hiện được chức năng này.
- * @route GET /reports/{id}/download-all
- * @group Report
- * @param {string} id.path.required - id môn học
- * @returns {Error.model} 200 - File excel chứa report.
- * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
- * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
- * @security Bearer
- */
- router.get('/:id/download-all', auth.isUser ,async (req, res) => {
-    // Create a new report
-    try {
-        let reportFile = await genExcelReportAll(req.params.id);
-        reportFile.write('Report.xlsx', res);
-    } catch (error) {
-        console.log(error);
-        res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
-    }
-})
 
 /**
  * Lấy dữ liệu điểm danh.
@@ -180,6 +220,9 @@ const excel = require('excel4node');
         res.status(400).send(ResponseUtil.makeMessageResponse(error.message))
     }
 })
+
+
+
 
 
 
@@ -272,8 +315,12 @@ async function findUser(userId){
 
 async function findClass(classId){
     const classInfo = await ClassInfo.findOne({id: classId }).populate('students').populate('monitors').populate('teacher');
+    if(!classInfo){
+        throw new Error(stringMessage.class_not_found);
+    }
     return classInfo;
 }
+
 async function findReport(date, subject, shift){
     const report = await RollCallReport.findOne({date: date, subject: subject, shift: shift}).populate('content');
     return report;
@@ -329,6 +376,8 @@ async function genExcelReport(reportId){
     let rowTitleStyle = workbook.createStyle(styleWorkbook.rowTitleStyle);
 
     let rowStyle = workbook.createStyle(styleWorkbook.rowStyle);
+    
+    let border = workbook.createStyle(styleWorkbook.border);
 
     reportSheet.cell(1, 1, 1, 5, true).string(title).style(titleStyle);
     reportSheet.cell(2, 1, 2, 5, true).string(subject).style(titleStyle);
@@ -390,6 +439,7 @@ async function genExcelReport(reportId){
 async function genExcelReportAll(classId){
     let report = await findAllReportBySubject(classId)
     //console.log(report.content[0].user);
+    //console.log(classId);
     let classInfo = await findClass(classId);
     console.log(classInfo);
     let workbook = new excel.Workbook();
@@ -407,6 +457,7 @@ async function genExcelReportAll(classId){
     let rowTitleStyle = workbook.createStyle(styleWorkbook.rowTitleStyle);
 
     let rowStyle = workbook.createStyle(styleWorkbook.rowStyle);
+    let border = workbook.createStyle(styleWorkbook.border);
 
     reportSheet.cell(1, 1, 1, 5, true).string(title).style(titleStyle);
     reportSheet.cell(2, 1, 2, 5, true).string(subject).style(titleStyle);
@@ -466,6 +517,8 @@ async function genExcelReportAll(classId){
         }
         reportCol++;
     }
+    console.log({pos: pos, reportCol: reportCol});
+    reportSheet.cell(5, 4, pos-1, reportCol-1).style(rowStyle);
     reportSheet.column(2).setWidth(15);
     reportSheet.column(3).setWidth(30);
     return workbook;

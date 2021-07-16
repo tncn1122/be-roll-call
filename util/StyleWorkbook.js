@@ -64,5 +64,24 @@ module.exports = {
             outline: false,
           },
       },
+      border: {
+        left: {
+          style: 'thin',
+          color: 'black',
+        },
+        right: {
+          style: 'thin',
+          color: 'black',
+        },
+        top: {
+          style: 'thin',
+          color: 'black',
+        },
+        bottom: {
+          style: 'thin',
+          color: 'black',
+        },
+        outline: false,
+      },
     
 }

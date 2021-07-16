@@ -18,7 +18,7 @@ const userUtil = require('../util/UserUtils')
 /**
  * @typedef PasswordChange
  * @property {string} old_password
- * @property {string} new_password
+ * @property {string} password
  */
 
 const userSchema = mongoose.Schema({
