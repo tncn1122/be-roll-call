@@ -507,17 +507,17 @@ async function genExcelReportAll(classId){
                 switch(item.status){
                     case 'ontime':{
                         reportSheet.cell(studentPosition.get(item.id), reportCol).string(stringMessage.ontime).style(rowStyle);
-                        total_ontime++;
+                        
                         break;
                     }
                     case 'late':{
                         reportSheet.cell(studentPosition.get(item.id), reportCol).string(stringMessage.late).style(rowStyle);
-                        total_late++;
+                        
                         break;
                     }  
                     case 'absent':{
                         reportSheet.cell(studentPosition.get(item.id), reportCol).string(stringMessage.absent).style(rowStyle);
-                        total_absent++;
+                        
                         break;
                     }
                 }
