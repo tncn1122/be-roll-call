@@ -8,5 +8,5 @@ function id(text){
 
 
 module.exports = {
-    Id
+    id
 }
