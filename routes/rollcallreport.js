@@ -162,9 +162,8 @@ const excel = require('excel4node');
  * @returns {Error.model} 200 - File excel chứa report.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
- * @security Bearer
  */
- router.get('/:class_id/download-all', auth.isUser ,async (req, res) => {
+ router.get('/:class_id/download-all' ,async (req, res) => {
     // Create a new report
     try {
         console.log(req.params.class_id);
@@ -185,9 +184,8 @@ const excel = require('excel4node');
  * @returns {Error.model} 200 - File excel chứa report.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
- * @security Bearer
  */
- router.get('/:id/download', auth.isUser ,async (req, res) => {
+ router.get('/:id/download' ,async (req, res) => {
     // Create a new report
     try {
         let reportFile = await genExcelReport(req.params.id);
