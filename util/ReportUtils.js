@@ -6,7 +6,7 @@ const moment = require('moment-timezone');
 
 
 function getDate(){
-    moment().tz().setDefault("Asia/Ho_Chi_Minh");
+    moment.tz.setDefault("Asia/Ho_Chi_Minh");
     const now = moment();
     return formatDate(now);
 }
@@ -46,7 +46,7 @@ function isAbleCreatedReport(dateList){
 }
 
 function getStatusCheckin(reportInfo){
-    moment().tz().setDefault("Asia/Ho_Chi_Minh");
+    moment.tz.setDefault("Asia/Ho_Chi_Minh");
     const now = moment();
     const limitTime = moment(reportInfo.checkinLimitTime, "hh:mm");
     const expiredTime = moment(reportInfo.expired, "hh:mm");

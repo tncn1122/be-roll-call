@@ -35,7 +35,7 @@ function currentDate(){
 }
 
 function isChangeExpired(startDate){
-    moment().tz().setDefault("Asia/Ho_Chi_Minh");
+    moment.tz.setDefault("Asia/Ho_Chi_Minh");
     const now = moment();
     const startDateMM = moment(startDate, 'DD-MM-YYYY');
     return (now.isSameOrAfter(startDateMM));
