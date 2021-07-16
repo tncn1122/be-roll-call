@@ -2,6 +2,7 @@ const stringMessage = require('../value/string')
 const RollCallReport = require('../models/RollCallReport');
 const ClassInfo = require('../models/ClassInfo');
 const moment = require('moment');
+moment.tz.setDefault("Asia/Ho_Chi_Minh");
 
 
 

@@ -1,6 +1,7 @@
 const stringMessage = require('../value/string')
 const ClassInfo = require('../models/ClassInfo');
 const moment = require('moment') 
+moment.tz.setDefault("Asia/Ho_Chi_Minh");
 
 const week = {
     2: 'Monday',
