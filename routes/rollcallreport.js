@@ -37,7 +37,7 @@ const excel = require('excel4node');
  * @group Report
  * @param {string} class_id.path.required - id lớp cần điểm danh
  * @param {ReportConfig.model} config.body.required - config cho bảng điểm danh
- * @returns {RollCallReport.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
+ * @returns {ListReports.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer
@@ -87,7 +87,7 @@ const excel = require('excel4node');
  * @route GET /reports/{class_id}
  * @group Report
  * @param {string} class_id.path.required - id lớp cần điểm danh
- * @returns {RollCallReport.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
+ * @returns {ListReports.model} 200 - Thông tin tài khoản và token ứng với tài khoản đó.
  * @returns {Error.model} 400 - Thông tin trong Body bị sai hoặc thiếu.
  * @returns {Error.model} 401 - Không có đủ quyền để thực hiện chức năng.
  * @security Bearer

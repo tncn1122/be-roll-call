@@ -16,7 +16,7 @@ const QR = require('../util/QR');
  * @property {string} id.required
  * @property {string} subjectName.required
  * @property {string} teacherName.required
- * @property {string} subject_id.required
+ * @property {string} subject.required
  * @property {Array.<UserReport>} content.required
  * @property {string} qrUrl.required
  * @property {string} date.required
