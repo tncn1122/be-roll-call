@@ -132,7 +132,7 @@ const userUtil = require('../util/UserUtils')
         let classUpdate = req.body;
         const classInfo = await findClass(classUpdate.id);
         if(classUtil.isChangeExpired(classInfo.dateStart)){
-            return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.change_time_expired));
+            return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.class_change_timeup));
         }
         let class_id = classInfo.id;
         delete classUpdate['id'];
