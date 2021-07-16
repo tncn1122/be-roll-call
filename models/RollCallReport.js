@@ -9,7 +9,7 @@ const QR = require('../util/QR');
 /**
  * @typedef UserReport
  * @property {User.model} user.required
- * @property {enum} status.require - 0 là chưa điểm danh (vắng), 1 là điểm danh hợp lệ, 2 là điểm danh muộn. - eg: integer:0,1,2
+ * @property {enum} status.required - absent là chưa điểm danh (vắng), ontime là điểm danh hợp lệ, late là điểm danh muộn. - eg: integer:absent,ontime,late
  */
 /**
  * @typedef RollCallReport
