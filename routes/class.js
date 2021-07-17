@@ -10,7 +10,7 @@ const QR = require('../util/QR')
 const router = express.Router()
 const classUtil = require('../util/ClassUtils')
 const userUtil = require('../util/UserUtils')
-
+const moment = require('moment-timezone') 
 
 /**
  * @typedef ListClasses
@@ -45,6 +45,9 @@ const userUtil = require('../util/UserUtils')
         classInfo.monitors = [];
         if (req.body.hasOwnProperty('monitors')){
             classInfo.monitors = await createStudentList(req.body.monitors);
+        }
+        if(!classUtil.validateDate(classInfo.dateStart)){
+            classInfo.dateStart = classUtil.formatDate(moment());
         }
         console.log(classInfo);
         const newClass = new ClassInfo(classInfo);

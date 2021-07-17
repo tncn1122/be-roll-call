@@ -19,7 +19,7 @@ async function findClass(classId){
 
 function validateDate(date){
     try{
-        moment(date, 'DD-MM-YYYY');
+        return moment(date, 'DD-MM-YYYY', true).isValid();
     }
     catch(err){
         throw new Error(stringMessage.date_wrong);
