@@ -25,7 +25,7 @@ module.exports = {
     password_required: "Mật khẩu không được để trống!",
     role_required: "Quyền không được để trống!",
     role_wrong: "Quyền không đúng cú pháp!",
-    date_wrong: "Ngày không hợp lệ!",
+    date_wrong: "Ngày bắt đầu không hợp lệ!",
     id_form: "Chỉ bao gồm chữ cái, chữ số và dấu gạch ngang!",
     
 

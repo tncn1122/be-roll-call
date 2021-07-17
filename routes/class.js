@@ -46,9 +46,15 @@ const moment = require('moment-timezone')
         if (req.body.hasOwnProperty('monitors')){
             classInfo.monitors = await createStudentList(req.body.monitors);
         }
-        if(!classUtil.validateDate(classInfo.dateStart)){
+        if (req.body.hasOwnProperty('dateStart')){
+            if(!classUtil.validateDate(classInfo.dateStart)){
+                throw new Error(stringMessage.date_wrong);
+            }
+        }
+        else{
             classInfo.dateStart = classUtil.formatDate(moment());
         }
+        
         console.log(classInfo);
         const newClass = new ClassInfo(classInfo);
         await newClass.save();
