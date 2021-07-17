@@ -85,8 +85,10 @@ reportschema.pre('save', async function(next){
     const report = this;
     report.qrUrl = QR.createQR(report.id);
     report.date = reportUtil.getDate();
+
     classtUtil.validateDate(report.checkinLimitTime);
     validateUtil.id(report.id);
+    report.checkinLimitTime = lidateUtil.limitTime(report.expired, report.checkinLimitTime);
     next();
 })
 

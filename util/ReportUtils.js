@@ -57,9 +57,7 @@ function getStatusCheckin(reportInfo){
     const now = moment();
     const limitTime = moment(reportInfo.checkinLimitTime, "HH:mm");
     const expiredTime = moment(reportInfo.expired, "HH:mm");
-    if(limitTime.isAfter(expiredTime)){
-        limitTime = expiredTime;
-    }
+
     if(!reportInfo.allowLate){
         expiredtime = limitTime;
     }

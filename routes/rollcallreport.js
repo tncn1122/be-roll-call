@@ -156,7 +156,7 @@ const rollcallReport = require('../models/RollCallReport');
 
 
 /**
- * Tải về tổng hợp danh sách điểm danh của một môn. Chỉ có tài khoản đăng nhập mới thực hiện được chức năng này.
+ * Tải về tổng hợp danh sách điểm danh của một môn.
  * @route GET /reports/{class_id}/download-all
  * @group Report
  * @param {string} class_id.path.required - id môn học
@@ -178,7 +178,7 @@ const rollcallReport = require('../models/RollCallReport');
 
 
 /**
- * Tải về danh sách điểm danh. Chỉ có tài khoản đăng nhập mới thực hiện được chức năng này.
+ * Tải về danh sách điểm danh.
  * @route GET /reports/{id}/download
  * @group Report
  * @param {string} id.path.required - id bảng điểm danh
@@ -389,7 +389,7 @@ async function genExcelReport(reportId){
 
     let rowStyle = workbook.createStyle(styleWorkbook.rowStyle);
     
-    let border = workbook.createStyle(styleWorkbook.border);
+    //let border = workbook.createStyle(styleWorkbook.border);
 
     reportSheet.cell(1, 1, 1, 5, true).string(title).style(titleStyle);
     reportSheet.cell(2, 1, 2, 5, true).string(subject).style(titleStyle);
@@ -469,7 +469,7 @@ async function genExcelReportAll(classId){
     let rowTitleStyle = workbook.createStyle(styleWorkbook.rowTitleStyle);
 
     let rowStyle = workbook.createStyle(styleWorkbook.rowStyle);
-    let border = workbook.createStyle(styleWorkbook.border);
+    //let border = workbook.createStyle(styleWorkbook.border);
 
     reportSheet.cell(1, 1, 1, 5, true).string(title).style(titleStyle);
     reportSheet.cell(2, 1, 2, 5, true).string(subject).style(titleStyle);
