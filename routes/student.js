@@ -7,7 +7,7 @@ const User = require('../models/User');
 const ClassInfo = require('../models/ClassInfo');
 const stringMessage = require('../value/string');
 const QR = require('../util/QR')
-//const userUtil = require('../util/userUtils')
+const userUtil = require('../util/UserUtils')
 const router = express.Router()
 
 
