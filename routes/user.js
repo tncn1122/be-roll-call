@@ -306,7 +306,7 @@ router.delete('/:id', auth.isAdmin, async(req, res) => {
         let userId = req.params.id;
         const user = await User.findOne({id: userId});
         if (user){
-            if (user.class.length > 0){
+            if (user.classes.length > 0){
                 res.status(200).send(ResponseUtil.makeMessageResponse(stringMessage.user_cant_delete_bc_delete))
             }
             await User.deleteOne({id: userId})
