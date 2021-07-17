@@ -14,6 +14,9 @@ module.exports = {
     report_not_found: "Không tìm thấy bảng điểm danh!",
     student_not_in_class: "Bạn hiện không có trong danh sách điểm danh!",
     student_checked: "Sinh viên đã điểm danh hoặc hết thời hạn điểm danh!",
+    user_cant_delete_bc_delete: "Không thể xóa tài khoản vì tài khoản đang có trong lớp học!",
+    user_cant_checkin_bc_date: "Điểm danh sai ngày!",
+
     //validate
     id_required: "ID không được để trống!",
     name_required: "Tên không được để trống!",

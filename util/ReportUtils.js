@@ -46,11 +46,20 @@ function isAbleCreatedReport(dateList){
     
 }
 
+function isAbleToCheckin(date)
+{
+    moment.tz.setDefault("Asia/Ho_Chi_Minh");
+    const dateMM = moment('DD-MM-YYYY');
+    return moment().isSame(dateMM, day);
+}
 function getStatusCheckin(reportInfo){
     moment.tz.setDefault("Asia/Ho_Chi_Minh");
     const now = moment();
-    const limitTime = moment(reportInfo.checkinLimitTime, "hh:mm");
-    const expiredTime = moment(reportInfo.expired, "hh:mm");
+    const limitTime = moment(reportInfo.checkinLimitTime, "HH:mm");
+    const expiredTime = moment(reportInfo.expired, "HH:mm");
+    if(limitTime.isAfter(expiredTime)){
+        limitTime = expiredTime;
+    }
     if(!reportInfo.allowLate){
         expiredtime = limitTime;
     }
@@ -74,5 +83,5 @@ module.exports = {
     genReportId,
     getDate,
     getStatusCheckin,
-
+    isAbleToCheckin
 }

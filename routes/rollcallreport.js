@@ -12,6 +12,7 @@ const userUtil = require('../util/UserUtils');
 const reportUtil = require('../util/ReportUtils');
 const styleWorkbook = require('../util/StyleWorkbook');
 const excel = require('excel4node');
+const rollcallReport = require('../models/RollCallReport');
 
 
 
@@ -246,6 +247,9 @@ const excel = require('excel4node');
         let report = await findReportById(req.params.id);
         //console.log(report);
         let status = reportUtil.getStatusCheckin(report);
+        if(!reportUtil.isAbleToCheckin(report.date)){
+            return res.status(400).send(ResponseUtil.makeMessageResponse(stringMessage.user_cant_checkin_bc_date));
+        }
         let check = 0;
         for(const item of report.content){
             if (item.user && item.user.id === student.id){
