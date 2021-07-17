@@ -88,7 +88,7 @@ reportschema.pre('save', async function(next){
 
     classtUtil.validateDate(report.checkinLimitTime);
     validateUtil.id(report.id);
-    report.checkinLimitTime = lidateUtil.limitTime(report.expired, report.checkinLimitTime);
+    report.checkinLimitTime = validateUtil.limitTime(report.expired, report.checkinLimitTime);
     next();
 })
 
