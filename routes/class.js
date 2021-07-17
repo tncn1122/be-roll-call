@@ -201,7 +201,7 @@ async function findStudent(userId){
 async function createStudentList(student_id_list){
     let student_list = [];
 
-    if (student_id_list){
+    if (student_id_list && student_id_list.length > 0){
         for (const student_id of student_id_list){
             let student = findStudent(student_id.id);
             if(student){
