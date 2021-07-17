@@ -46,7 +46,7 @@ function isAbleCreatedReport(dateList){
     
 }
 
-function isAbleToCheckin(date)
+function isAbleToCheckin(day)
 {
     moment.tz.setDefault("Asia/Ho_Chi_Minh");
     const dateMM = moment('DD-MM-YYYY');
