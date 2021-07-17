@@ -117,7 +117,7 @@ const classInfoSchema = mongoose.Schema({
 
 classInfoSchema.pre('save', function(next){
     const classInfo = this;
-    //classUtil.validateDays(classInfo.days);
+    classUtil.validateDays(classInfo.days);
     classUtil.validateDate(classInfo.dateStart);
     classInfo.schedule = classUtil.genSchedule(classInfo.dateStart, +
         classInfo.shift, classInfo.days, classInfo.dayOfWeek);

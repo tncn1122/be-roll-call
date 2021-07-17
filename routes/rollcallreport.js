@@ -334,9 +334,17 @@ async function findClass(classId){
 }
 
 async function findReport(date, subject, shift){
-    const report = await RollCallReport.findOne({date: date, subject: subject, shift: shift}).populate('content');
+    const report = await RollCallReport.findOne({date: date, subject: subject, shift: shift}).populate({ 
+        path: 'content',
+        populate: {
+          path: 'user',
+          model: 'User'
+        } 
+     });
     return report;
 }
+
+
 
 async function findAllReportBySubject(class_id){
     return await RollCallReport.findOne({subject: class_id}).populate({ 
@@ -507,20 +515,21 @@ async function genExcelReportAll(classId){
                 if(item.user === null){
                     continue;
                 }
-        
+                console.log(item);
+                console.log(studentPosition.get(item.user.id) + " " + reportCol)
                 switch(item.status){
                     case 'ontime':{
-                        reportSheet.cell(studentPosition.get(item.id), reportCol).string(stringMessage.ontime).style(rowStyle);
+                        reportSheet.cell(studentPosition.get(item.user.id), reportCol).string(stringMessage.ontime).style(rowStyle);
                         
                         break;
                     }
                     case 'late':{
-                        reportSheet.cell(studentPosition.get(item.id), reportCol).string(stringMessage.late).style(rowStyle);
+                        reportSheet.cell(studentPosition.get(item.user.id), reportCol).string(stringMessage.late).style(rowStyle);
                         
                         break;
                     }  
                     case 'absent':{
-                        reportSheet.cell(studentPosition.get(item.id), reportCol).string(stringMessage.absent).style(rowStyle);
+                        reportSheet.cell(studentPosition.get(item.user.id), reportCol).string(stringMessage.absent).style(rowStyle);
                         
                         break;
                     }

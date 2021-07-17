@@ -29,7 +29,7 @@ function validateDate(date){
 
 function validateDays(days){
     if(days <= 0){
-        throw new Error()
+        throw new Error(stringMessage.days_wrong);
     }
 }
 
