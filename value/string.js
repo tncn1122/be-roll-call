@@ -16,6 +16,7 @@ module.exports = {
     student_checked: "Sinh viên đã điểm danh hoặc hết thời hạn điểm danh!",
     user_cant_delete_bc_delete: "Không thể xóa tài khoản vì tài khoản đang có trong lớp học!",
     user_cant_checkin_bc_date: "Điểm danh sai ngày!",
+    days_wrong: "Thiết lập số buổi học sai!",
 
     //validate
     id_required: "ID không được để trống!",

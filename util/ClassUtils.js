@@ -26,6 +26,13 @@ function validateDate(date){
     }
 }
 
+
+function validateDays(days){
+    if(days <= 0){
+        throw new Error()
+    }
+}
+
 function formatDate(date, stringDate = "DD-MM-YYYY"){
     return moment(date).format(stringDate);
 }
@@ -95,4 +102,5 @@ module.exports = {
     genSchedule,
     isChangeExpired,
     validateDate,
+    validateDays
 }
